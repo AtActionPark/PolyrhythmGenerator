@@ -81,12 +81,13 @@ $(document).ready(function(){
 })
 
 function generateSong(){
-  getParams()
+  
 
   generationSeed = Math.random()*100
   generationSeed = generationSeed.toFixed(seedPrecision)
   seed = generationSeed
   $('#seed').html(generateSeed(seed))
+  getParams()
 
   resolution = baseResolution
   maxLength = Math.max(maxLength, resolution)
@@ -105,7 +106,7 @@ function generateSong(){
 }
 //Concatenates all needed params for the seed
 function generateSeed(){
-  var s = tempo + '-' + baseResolution + '-' + maxLength + '-' + density + '-'+ complexity +  '-' + (useLeftFoot?1:0) + '-' + (orchestrate?1:0) + '-' +  generationSeed
+  var s = tempo + '-' + baseResolution + '-' + maxLength + '-' + density + '-'+ complexity*100 +  '-' + (useLeftFoot?1:0) + '-' + (orchestrate?1:0) + '-' +  generationSeed
   return s;
 }
 //Reads the seed value input and generates a song according to it
@@ -125,7 +126,8 @@ function loadSeed(){
   density = parseInt(s[3]) || 0.5
   $('#density').val(density)
 
-  complexity = parseInt(s[4]) || 50
+
+  complexity = parseInt(s[4])/100 || 50
   $('#complexity').val(complexity*100)
   $('#complexityResult').html(complexity*100)
 
@@ -151,11 +153,13 @@ function resetAndLoad(){
   resolution = baseResolution
   maxLength = Math.max(maxLength, resolution)
   
+  var count = 0
   do {
     reset()
     randomDrum()
+    count++;
   }
-  while(max > maxLength || max <= 2*resolution)
+  while(max > maxLength  && count <50)
 
   displayParams()
   drawTab()
