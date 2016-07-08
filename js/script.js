@@ -82,15 +82,13 @@ $(document).ready(function(){
 })
 
 function generateSong(){
-  
-
   generationSeed = Math.random()*100
   generationSeed = generationSeed.toFixed(seedPrecision)
   seed = generationSeed
-  $('#seed').html(generateSeed(seed))
+  
 
   getParams()
-
+$('#seed').html(generateSeed(seed))
   resolution = baseResolution
   maxLength = Math.max(maxLength, resolution)
   var count = 0
