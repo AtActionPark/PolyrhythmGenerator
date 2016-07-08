@@ -3,9 +3,8 @@
 //cd c://program files (x86)/google/chrome/application chrome --allow-file-access-from-files
 
 //SEEDS
-//60-4-72-40-0.21-0-0-57.24994 - simple 5 over 4
-//60-5-72-50-1-1-1-22.37388 - 5/4 clusterfuck
-//80-3-72-50-1-1-1-20.96927 - less insane 3/4 weird flas
+//60-4-72-50-20-0-0-58.67931 simple 5 over 4
+
 
 // Parameters
 var tempo = 60.0;
@@ -87,6 +86,7 @@ function generateSong(){
   generationSeed = generationSeed.toFixed(seedPrecision)
   seed = generationSeed
   $('#seed').html(generateSeed(seed))
+
   getParams()
 
   resolution = baseResolution

@@ -1,4 +1,4 @@
-Test for generating drum polyruthms.
+Test for generating drum polyrhythms.
 
 
 
