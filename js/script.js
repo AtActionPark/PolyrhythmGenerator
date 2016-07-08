@@ -4,6 +4,8 @@
 
 //SEEDS
 //60-4-72-50-20-0-0-58.67931 simple 5 over 4
+//60-5-72-50-100-1-1-22.28552 cool hard 5/4
+//80-3-72-50-50-1-1-58.82948 cool 3/4
 
 
 // Parameters
@@ -17,7 +19,7 @@ var maxLength = 64;
 var useLeftFoot = true;
 var orchestrate = true;
 //0-1, linear. Used to calculate length and organisation of sequences 
-var complexity;
+var complexity = 0.5;
 //complexity translated to 0-100, with squared increment
 var difficulty;
 
