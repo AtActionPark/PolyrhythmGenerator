@@ -1,5 +1,6 @@
 Test for generating drum polyrhythms.
-stull pretty buggy
+
+Seeding generation will change while I change stuff, kept the old version as history while I change this one
 
 
-[html preview](http://rawgit.com/AtActionPark/polyrhythmGen/master/index.html)
+[html preview](http://rawgit.com/AtActionPark/polyrhythmGenDev/master/index.html)
