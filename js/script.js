@@ -85,20 +85,24 @@ function generateSong(){
   generationSeed = Math.random()*100
   generationSeed = generationSeed.toFixed(seedPrecision)
   seed = generationSeed
-  
+  reset()
 
   getParams()
-$('#seed').html(generateSeed(seed))
+  $('#seed').html(generateSeed(seed))
   resolution = baseResolution
   maxLength = Math.max(maxLength, resolution)
   var count = 0
   do {
-    reset()
-    randomDrum()
+    max = 1;
+    lFootLength = 0;
+    rFootLength = 0;
+    lHandLength = 0;
+    rHandLength = 0;
+    generateLengths()
     count++;
-  }
-  while(max > maxLength  && count <50)
+  } while((max > maxLength  && count <500) || max > 200)
 
+  randomDrum()
   displayParams()
   drawTab()
   setInterval(scheduler, 20);
@@ -106,7 +110,7 @@ $('#seed').html(generateSeed(seed))
 }
 //Concatenates all needed params for the seed
 function generateSeed(){
-  var s = tempo + '-' + baseResolution + '-' + maxLength + '-' + density + '-'+ complexity*100 +  '-' + (useLeftFoot?1:0) + '-' + (orchestrate?1:0) + '-' +  generationSeed
+  var s = parseInt(tempo) + '-' + parseInt(baseResolution) + '-' + parseInt(maxLength) + '-' + parseInt(density) + '-'+ parseInt(complexity*100) +  '-' + (useLeftFoot?1:0) + '-' + (orchestrate?1:0) + '-' +  generationSeed
   return s;
 }
 //Reads the seed value input and generates a song according to it
@@ -127,9 +131,9 @@ function loadSeed(){
   $('#density').val(density)
 
 
-  complexity = parseInt(s[4])/100 || 50
-  $('#complexity').val(complexity*100)
-  $('#complexityResult').html(complexity*100)
+  complexity = parseInt(s[4])/100 || 0.5
+  $('#complexity').val(parseInt(complexity*100))
+  $('#complexityResult').html(parseInt(complexity*100))
 
 
   useLeftFoot = parseInt(s[5]) ==0? false: true|| false
@@ -148,6 +152,7 @@ function loadSeed(){
 }
 //generate song without chosing a new seed
 function resetAndLoad(){
+  reset()
   getParams()
 
   resolution = baseResolution
@@ -155,18 +160,21 @@ function resetAndLoad(){
   
   var count = 0
   do {
-    reset()
-    randomDrum()
+    max = 1;
+    lFootLength = 0;
+    rFootLength = 0;
+    lHandLength = 0;
+    rHandLength = 0;
+    generateLengths()
     count++;
-  }
-  while(max > maxLength  && count <50)
+  } while((max > maxLength  && count <500) || max > 200)
 
+  randomDrum()
   displayParams()
   drawTab()
   setInterval(scheduler, 20);
   play = true;
 }
-
 function reset(){
   context.resume()
   clearInterval(schedulerTimer);
@@ -296,8 +304,12 @@ Command.prototype.display = function(){
 
 function generateLengths(){
   var l1,l2,l3,l4;
+
+  //make sure that at least on step length is equal to teh resolution
   l1 = baseResolution
 
+  //chose 3 other, making sure we end up with 4 different values
+  //very ugly
   do{
     l2 = getRandomInt(minStep,maxStep)
   }
@@ -313,7 +325,7 @@ function generateLengths(){
   }
   while(l4 == l1 || l4 == l2 || l4 == l3)
 
-
+  //depending on the difficulty, replace some of the length to be equal to some other
   if(getRandomFloat(0,100)<=(100-difficulty))
     l2 = l1
   if(getRandomFloat(0,100)<=(100-difficulty))
@@ -321,22 +333,28 @@ function generateLengths(){
   if(getRandomFloat(0,100)<=(100-difficulty))
     l4 = l3
 
+  var arr = []
+  //if succeeds a difficulty roll, make sure that the left foor is on the resolution length, random for the rest
   if(getRandomFloat(0,100)<(1-complexity)*100){
-    var arr = [l2,l3,l4].shuffle()
+    arr = [l2,l3,l4].shuffle()
     lHandLength = arr[0]
     rHandLength = arr[1]
     lFootLength = l1
     rFootLength = arr[2]
   }
   
+  //else chose randomly
   else{
-    var arr = [l1,l2,l3,l4].shuffle()
+    arr = [l1,l2,l3,l4].shuffle()
     lHandLength = arr[0]
     rHandLength = arr[1]
     lFootLength = arr[2]
     rFootLength = arr[3]
   }
 
+  for(var i = 0;i<arr.length;i++){
+    max = lcm(max,arr[i])
+  }
 }
 
 //Generates sequence of notes based on random params
@@ -410,9 +428,6 @@ function randomDrum(){
   var rightFootCommand = new Command(rightFoot,rightFootSequence,'RightFoot')
   commandList.push(rightFootCommand)
 
-   for(var i = 0;i<commandList.length;i++){
-    max = lcm(max,commandList[i].sequence.length)
-  }
 
   commandList.forEach(function(c){
     var n = max/c.sequence.length

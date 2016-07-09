@@ -42,42 +42,8 @@ function pickRandomArray(arr) {
     return arr[arr.length * rand() << 0 ];
 }
 
-//Returns a random number roughly following a gaussian distrubution (center: 0 - std dev:1)
-function getRandomGaussian() {
-    var u = 1 - getRandomFloat(0,1); // Subtraction to flip [0, 1) to (0, 1].
-    var v = 1 - getRandomFloat(0,1);
-    return Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v );
-}
-
-function getRandomPow2(max){
-  return Math.pow(2,getRandomInt(0,max))
-}
 
 
-
-function pad(n, width, z) {
-  z = z || '0';
-  n = n + '';
-  return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
-}
-
-function convertBase(value, from_base, to_base) {
-  var range = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/'.split('');
-  var from_range = range.slice(0, from_base);
-  var to_range = range.slice(0, to_base);
-  
-  var dec_value = value.split('').reverse().reduce(function (carry, digit, index) {
-    if (from_range.indexOf(digit) === -1) throw new Error('Invalid digit `'+digit+'` for base '+from_base+'.');
-    return carry += from_range.indexOf(digit) * (Math.pow(from_base, index));
-  }, 0);
-  
-  var new_value = '';
-  while (dec_value > 0) {
-    new_value = to_range[dec_value % to_base] + new_value;
-    dec_value = (dec_value - (dec_value % to_base)) / to_base;
-  }
-  return new_value || '0';
-}
 
 Array.prototype.shuffle = function() {
   var i = this.length, j, temp;
