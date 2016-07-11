@@ -14,7 +14,6 @@ function lcm(a,b){
   return a*b/gcd(a,b)
 }
 
-
 //SEEDED RANDOMS. Stolen somewhere
 // Establish the parameters of the generator
 var m = 25;
@@ -98,6 +97,59 @@ function getInstrument(limb){
     result =  ['snare','opHiHat','highTom']
   return orchestrate? result : [result[0]]
 }
+function getBuffer(instr){
+  if(instr == 'kick')
+    return kickSound.buffer
+  else if (instr == 'snare')
+    return snareSound.buffer
+  else if (instr == 'clHiHat')
+    return clHiHatSound.buffer
+  else if (instr == 'opHiHat')
+    return opHiHatSound.buffer
+  else if (instr == 'footHiHat')
+    return clHiHatSound.buffer
+  else if (instr == 'metronome')
+    return metronomeSound.buffer
+  else if (instr == 'highTom')
+    return highTomSound.buffer
+  else if (instr == 'medTom')
+    return medTomSound.buffer
+  else if (instr == 'floorTom')
+    return floorTomSound.buffer
+  else if (instr == 'ride')
+    return rideSound.buffer
+}
+function getGain(instr){
+  if(instr == 'kick')
+    return kickGain
+  else if (instr == 'snare')
+    return snareGain
+  else if (instr == 'clHiHat')
+    return clHiHatGain
+  else if (instr == 'opHiHat')
+    return opHiHatGain
+  else if (instr == 'footHiHat')
+    return clHiHatGain
+  else if (instr == 'metronome')
+    return metronomeGain
+  else if (instr == 'highTom')
+    return highTomGain
+  else if (instr == 'medTom')
+    return medTomGain
+  else if (instr == 'floorTom')
+    return floorTomGain
+  else if (instr == 'ride')
+    return rideGain
+}
+function isFla(limb,c){
+  return limb == 'rightHand' && (commandList[1].sequenceRepeated[c] == commandList[2].sequenceRepeated[c])
+}
+
+
+function getMinPossibleLength(length, complexity){
+
+}
+
 
 //classic webaudio api loader.Not my code
 function loadSamples(){

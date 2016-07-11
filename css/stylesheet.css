@@ -1,21 +1,24 @@
-input[type=range] {
-    width: 100px;
-    height:20px;
+*{
+    font-size: 15px;
 }
 input[type=numberbox] {
+    color:black;
+    margin-bottom:5px;
+}
+select {
     color:black;
 }
 
 #wrapper {
-	padding-left: 300px;
+	padding-left: 260px;
 }
 #sidebar-wrapper {
     z-index: 1000;
     position: fixed;
-    left: 300px;
-    width: 300px;
+    left: 260px;
+    width: 260px;
     height: 100%;
-    margin-left: -300px;
+    margin-left: -260px;
     overflow-y: auto;
     background: #000;
     color:white;
@@ -33,7 +36,7 @@ input[type=numberbox] {
     padding: 0;
     list-style: none;
 }
-#params ,#evolveDiv, #seedDiv{
+#params , #seedDiv{
 	margin: 20px;
 	border:1px solid white;
 	padding: 10px;
@@ -131,4 +134,11 @@ width: 80px;
 
 #complexityResult{
     display:inline;
+}
+
+.med{
+    width:40px;
+}
+.smaller{
+    width:25px; 
 }

@@ -15,14 +15,30 @@
       <div id="sidebar-wrapper">
         <p class="title">GENERATE</p>
         <div id="params">
-          Tempo: <input id='tempo' value = '60' type=numberBox size="1" min=1 /></br>
-          Time Sig: <input id='resolution' value = '4' type=numberBox size="1" min=1 /> / 4</br>
-          Max Length: <input id='maxLength' value = '72' type=numberBox size="1" min=1 max=120 /></br>
-          Density: <input id='density' value = '50' type=numberBox size="1" min=1 max=100 /></br>
-          Complexity: <p id="complexityResult">50</p><input id='complexity' type=range value=50 width="100px" min=1 max=100/></br>
+          Tempo: <input id='tempo' class="med" value = '60' type=numberBox  min=1 /></br>
+          Time Sig: <input id='resolution' class="smaller" value = '4' type=numberBox  min=1 /> / <input id='subdivision' class="smaller" value = '4' type=numberBox min=1 /></br>
+          Max Length: <input id='maxLength'  class="smaller" value = '72' type=numberBox  min=1 max=120 /></br>
+          
+          Density:
+          <select id="density">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2" selected="selected">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select></br>
+          Nb. of Rhythms:
+          <select id="nbOfRhythms">
+            <option value="1">1</option>
+            <option value="2" selected="selected">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+
           <div id="leftFootDiv">Left foot : <input id="leftFoot"  type="checkbox" checked></div>
           <div id="orchestrateDiv">Orchestrate : <input id="orchestrate"  type="checkbox" checked></div>
-          <button id="generate" class="btn btn-default" onClick="generateSong()">Generate</button></br>
+          <button id="generate" class="btn btn-default" onClick="generateSong()">Generate</button>
+          <button id="random" class="btn btn-default" onClick="randomize()">Random</button></br>
         </div>
         
         <p class="title">SEED</p>
@@ -32,10 +48,10 @@
           </br>
           </br>
           <input id='seedInput' type=numberBox size="20" min=1 /></br>
-          <button id="loadSeed" class="btn btn-default" onClick="loadSeed()">Load</button></br></br>
+          <button id="loadSeed" class="btn btn-default" onClick="readSeed()">Load</button></br></br>
         </div>
         
-        <footer><a href="http://www.github.com/atactionpark/polyrhythmGen">Source on Github</a></footer>
+        <footer><a href="http://www.github.com/atactionpark/polyrhythmGenDev">Source on Github</a></footer>
       </div>
       <div id="page-content-wrapper">
         <div id='sheet'></div>
