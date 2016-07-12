@@ -15,9 +15,26 @@
       <div id="sidebar-wrapper">
         <p class="title">GENERATE</p>
         <div id="params">
-          Tempo: <input id='tempo' class="med" value = '60' type=numberBox  min=1 /></br>
-          Time Sig: <input id='resolution' class="smaller" value = '4' type=numberBox  min=1 /> / <input id='subdivision' class="smaller" value = '4' type=numberBox min=1 /></br>
-          Max Length: <input id='maxLength'  class="smaller" value = '72' type=numberBox  min=1 max=120 /></br>
+          Tempo: <input id='tempo' class="bg" value = '60' type=number  min=1 onchange="changeTempo()"/></br>
+          Time Sig: 
+          <select id="resolution" >
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4" selected="selected">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+          </select> / 
+          <select id="subdivision">
+            <option value="2">2</option>
+            <option value="4" selected="selected">4</option>
+            <option value="8">8</option>
+          </select></br>
+          Max Length: <input id='maxLength'  class="med" value = '72' type=number min=1 max=120 /></br>
           
           Density:
           <select id="density">
@@ -39,6 +56,65 @@
           <div id="orchestrateDiv">Orchestrate : <input id="orchestrate"  type="checkbox" checked></div>
           <button id="generate" class="btn btn-default" onClick="generateSong()">Generate</button>
           <button id="random" class="btn btn-default" onClick="randomize()">Random</button></br>
+
+
+          <div>Force Length</div>
+          Left Hand: 
+          <select  id="forceLeftHand" onchange="changeForce()">
+            <option value="0" selected="selected">-</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4" >4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+          </select></br>
+          Right Hand: 
+          <select id="forceRightHand" onchange="changeForce()">
+            <option value="0" selected="selected">-</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4" >4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+          </select></br>
+          Left Foot: 
+          <select id="forceLeftFoot" onchange="changeForce()">
+            <option value="0" selected="selected">-</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4" >4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+          </select></br>
+          Right Foot: 
+          <select id="forceRightFoot" onchange="changeForce()">
+            <option value="0" selected="selected">-</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4" >4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+          </select>
         </div>
         
         <p class="title">SEED</p>
@@ -47,7 +123,7 @@
           </br>
           </br>
           </br>
-          <input id='seedInput' type=numberBox size="20" min=1 /></br>
+          <input id='seedInput' type=numberBox size="22" min=1 /></br>
           <button id="loadSeed" class="btn btn-default" onClick="readSeed()">Load</button></br></br>
         </div>
         

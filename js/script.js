@@ -22,6 +22,11 @@ var maxStep = 11;
 
 var flaTime = 0.04
 
+var forceLeftHand = 0;
+var forceRightHand = 0;
+var forceLeftFoot = 0;
+var forceRightFoot = 0;
+
 //limb bias - some limbs will play a higher average nb of notes
 var lHandDensityFactor = 0.7;
 var rHandDensityFactor = 0.8;
@@ -75,6 +80,8 @@ var floorTomGain = 1
 var rideGain = 0.7
 var metronomeGain = 0.7
 
+var possibleSubdivisions = [2,4,8]
+
 
 $(document).ready(function(){
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -88,13 +95,32 @@ $(document).ready(function(){
 
 //Concatenates all needed params for the seed
 function generateSeed(){
-  var s = parseInt(tempo) + '-' + parseInt(resolution) + '-'+ parseInt(subdivision) + '-' + parseInt(maxLength) + '-' + parseInt(densityCategory) + '-'+ parseInt(nbOfRhythms) +  '-' + (useLeftFoot?1:0) + '-' + (orchestrate?1:0) + '-' +  generationSeed
+  var s = parseInt(tempo) + '-' + parseInt(resolution) + '-'+ parseInt(subdivision) + '-' + parseInt(maxLength) + '-' + parseInt(densityCategory) + '-'+ parseInt(nbOfRhythms) +  '-' + (useLeftFoot?1:0) + '-' + (orchestrate?1:0) + '-' +  generationSeed 
+  if(forceLeftHand>0)
+    s+= '-' + forceLeftHand
+  if(forceRightHand>0)
+    s+= '-' + forceRightHand
+  if(forceLeftFoot>0)
+    s+= '-' + forceLeftFoot
+  if(forceRightFoot>0)
+    s+= '-' + forceRightFoot
   return s;
 }
 function generateSong(){
   generationSeed = Math.random()*100
   generationSeed = generationSeed.toFixed(seedPrecision)
   seed = generationSeed
+
+  // create empty buffer
+  var buffer = context.createBuffer(1, 1, 22050);
+  var source = context.createBufferSource();
+  source.buffer = buffer;
+
+  // connect to output (your speakers)
+  source.connect(context.destination);
+
+  // play the file
+  source.start(0)
 
   generateAndStart()
 }
@@ -132,6 +158,8 @@ function getUserParams(){
 
   useLeftFoot = $("#leftFoot").is(':checked');
   orchestrate = $("#orchestrate").is(':checked');
+
+  changeForce()
 }
 function randomize(){
   generationSeed = Math.random()*100
@@ -139,7 +167,7 @@ function randomize(){
 
   var t = getRandomInt(30,120);
   var res = getRandomInt(2,9);
-  var sub = getRandomInt(2,8);
+  var sub = pickRandomArray(possibleSubdivisions);
   var mxL = getRandomInt(20,120);
   var de = getRandomInt(0,4);
   var rh = getRandomInt(2,4);
@@ -148,6 +176,23 @@ function randomize(){
   var randomGenSeed = t + '-' + res+ '-' + sub+ '-' +mxL + '-' +de+ '-' + rh + '-'+lF+ '-' +or+ '-' +generationSeed
 
   loadSeed(randomGenSeed)
+}
+function changeTempo(){
+  tempo = parseInt($('#tempo').val())
+  if(tempo<1)
+    tempo = 1
+  $('#seed').html(generateSeed(seed))
+}
+function changeForce(){
+  forceLeftHand = parseInt($('#forceLeftHand').val())
+  forceRightHand = parseInt($('#forceRightHand').val())
+  forceLeftFoot = parseInt($('#forceLeftFoot').val())
+  forceRightFoot = parseInt($('#forceRightFoot').val())
+  if(forceLeftFoot>0 || forceRightFoot >0 || forceRightHand >0 || forceLeftHand>0){
+    $("#nbOfRhythms").prop('disabled', true);
+  }
+  else
+    $("#nbOfRhythms").prop('disabled', false);
 }
 
 //Reads the seed value input 
@@ -184,6 +229,16 @@ function loadSeed(input){
   $('#orchestrate').prop('checked', orchestrate);
 
   seed = parseFloat(s[8]) || 1
+
+  forceLeftHand = parseFloat(s[9]) || 0
+  $('#forceLeftHand').val(parseInt(forceLeftHand))
+  forceRightHand = parseFloat(s[10]) || 0
+  $('#forceRightHand').val(parseInt(forceRightHand))
+  forceLeftFoot = parseFloat(s[11]) || 0
+  $('#forceLeftFoot').val(parseInt(forceLeftFoot))
+  forceRightFoot = parseFloat(s[12]) || 0
+  $('#forceRightFoot').val(parseInt(forceRightFoot))
+  //changeForce()
 
   generationSeed = seed
   
@@ -343,7 +398,18 @@ function generateLengths(){
   lHandLength = lengths[1]
   rHandLength = lengths[2]
   rFootLength = lengths[3]
-  
+
+  if(forceLeftHand != 0)
+    lHandLength = forceLeftHand
+  if(forceRightHand != 0)
+    rHandLength = forceRightHand
+  if(forceLeftFoot != 0)
+    lFootLength = forceLeftFoot
+  if(forceRightFoot != 0)
+    rFootLength = forceRightFoot
+
+  lengths = [lFootLength,lHandLength,rFootLength,rHandLength]
+
   // compute the max number of steps of the song
   max = 1;
   for(var i = 0;i<lengths.length;i++)

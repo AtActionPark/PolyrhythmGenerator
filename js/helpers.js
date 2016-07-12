@@ -146,10 +146,15 @@ function isFla(limb,c){
 }
 
 
-function getMinPossibleLength(length, complexity){
-
+function getMinPossibleLength(resolution, nbOfRyhthms){
+  var m = 1;
+  var arr = [4,5,6,8]
+  for(var i = 0;i<arr.length;i++)
+    m = lcm(m,arr[i])
+  console.log(m)
+  return m
 }
-
+getMinPossibleLength()
 
 //classic webaudio api loader.Not my code
 function loadSamples(){
