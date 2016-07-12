@@ -81,6 +81,7 @@ var rideGain = 0.7
 var metronomeGain = 0.7
 
 var possibleSubdivisions = [2,4,8]
+var loaded = false
 
 
 $(document).ready(function(){
@@ -90,7 +91,7 @@ $(document).ready(function(){
   context.suspend()
 
   //async loading of all samples
-  loadSamples();
+  //loadSamples();
 })
 
 //Concatenates all needed params for the seed
@@ -121,6 +122,10 @@ function generateSong(){
 
   // play the file
   source.start(0)
+  if(!loaded){
+    loaded = true
+    loadSamples()
+  }
 
   generateAndStart()
 }
