@@ -15,5 +15,4 @@ And a way to force specific length for each limb. If used, the Number of Ryhthm 
 [html preview](http://rawgit.com/AtActionPark/polyrhythmGenDev/master/index.html)
 
 
-Changes made:
 

@@ -1,7 +1,6 @@
 'use strict';
 
 // USER PARAMS
-//
 var tempo = 60.0;
 //nb of steps per bar
 var resolution = 4;
@@ -16,16 +15,12 @@ var orchestrate = true;
 //0-1, linear. Used to calculate length and organisation of sequences 
 var nbOfRhythms = 1;
 
+//FIXED PARAMS
 // sequences length
 var minStep = 4;
 var maxStep = 11;
-
 var flaTime = 0.04
-
-var forceLeftHand = 0;
-var forceRightHand = 0;
-var forceLeftFoot = 0;
-var forceRightFoot = 0;
+var possibleSubdivisions = [2,4,8]
 
 //limb bias - some limbs will play a higher average nb of notes
 var lHandDensityFactor = 0.7;
@@ -33,41 +28,7 @@ var rHandDensityFactor = 0.8;
 var lFootDensityFactor = 0.5;
 var rFootDensityFactor = 0.6;
 
-//scheduler
-var lookahead = 25.0;
-var scheduleAheadTime = 0.1;
-var schedulerTimer;
-var nextNoteTime = 0.0;
-
-//stuff
-var commandList = []
-var cursor = 0;
-var max = 1;
-var play = true;
-var context;
-var bufferLoader;
-var empty = '-'
-var metronomeMute = true
 var seedPrecision = 5;
-var generationSeed;
-var seed;
-var density;
-
-var lHandLength = 0;
-var rHandLength =0;
-var lFootLength = 0;
-var rFootLength = 0;
-
-var kickSound = null;
-var snareSound = null;
-var clHiHatSound = null;
-var opHiHatSound = null;
-var metronomeSound = null;
-var rideSound = null;
-var highTomSound = null;
-var medTomSound = null;
-var floorTomSound = null;
-
 
 var snareGain = 0.7
 var kickGain = 1
@@ -80,7 +41,45 @@ var floorTomGain = 1
 var rideGain = 0.7
 var metronomeGain = 0.7
 
-var possibleSubdivisions = [2,4,8]
+
+//SCHEDULER
+var lookahead = 25.0;
+var scheduleAheadTime = 0.1;
+var schedulerTimer;
+var nextNoteTime = 0.0;
+
+//stuff
+var commandList = []
+var cursor = 0;
+var max = 1;
+var play = true;
+var context;
+var bufferLoader;
+var empty = '-';
+var metronomeMute = true;
+var generationSeed;
+var seed;
+var density;
+
+var lHandLength = 0;
+var rHandLength =0;
+var lFootLength = 0;
+var rFootLength = 0;
+
+var forceLeftHand = 0;
+var forceRightHand = 0;
+var forceLeftFoot = 0;
+var forceRightFoot = 0;
+
+var kickSound = null;
+var snareSound = null;
+var clHiHatSound = null;
+var opHiHatSound = null;
+var metronomeSound = null;
+var rideSound = null;
+var highTomSound = null;
+var medTomSound = null;
+var floorTomSound = null;
 
 
 $(document).ready(function(){
@@ -91,37 +90,15 @@ $(document).ready(function(){
 
   //async loading of all samples
   loadSamples();
+  //if url contains a seed, load it
   readURL()
 })
 
-//Concatenates all needed params for the seed
-function generateSeed(){
-  var s = parseInt(tempo) + '-' + parseInt(resolution) + '-'+ parseInt(subdivision) + '-' + parseInt(maxLength) + '-' + parseInt(densityCategory) + '-'+ parseInt(nbOfRhythms) +  '-' + (useLeftFoot?1:0) + '-' + (orchestrate?1:0) + '-' +  generationSeed 
-  if(forceLeftHand>0)
-    s+= '-' + forceLeftHand
-  if(forceRightHand>0)
-    s+= '-' + forceRightHand
-  if(forceLeftFoot>0)
-    s+= '-' + forceLeftFoot
-  if(forceRightFoot>0)
-    s+= '-' + forceRightFoot
-  return s;
-}
+
 function generateSong(){
   generationSeed = Math.random()*100
   generationSeed = generationSeed.toFixed(seedPrecision)
   seed = generationSeed
-
-  // create empty buffer
-  var buffer = context.createBuffer(1, 1, 22050);
-  var source = context.createBufferSource();
-  source.buffer = buffer;
-
-  // connect to output (your speakers)
-  source.connect(context.destination);
-
-  // play the file
-  source.start(0)
 
   generateAndStart()
 }
@@ -203,14 +180,28 @@ function readURL(){
     loadSeed(captured)
   }
 }
-
-function shareSeed(){
-  //var loc = "http://rawgit.com/AtActionPark/polyrhythmGenDev/master/index.html?"+generateSeed()
-  //console.log(loc)
-  //window.location.href = loc;
-  window.history.pushState('seed', 'seed', '/AtActionPark/polyrhythmGenDev/master/index.html?'+generateSeed());
+function reset(){
+  context.resume()
+  clearInterval(schedulerTimer);
+  cursor = 0;
+  commandList = []
+  generateLengths()
 }
 
+//SEED
+//Concatenates all needed params for the seed
+function generateSeed(){
+  var s = parseInt(tempo) + '-' + parseInt(resolution) + '-'+ parseInt(subdivision) + '-' + parseInt(maxLength) + '-' + parseInt(densityCategory) + '-'+ parseInt(nbOfRhythms) +  '-' + (useLeftFoot?1:0) + '-' + (orchestrate?1:0) + '-' +  generationSeed 
+  if(forceLeftHand>0)
+    s+= '-' + forceLeftHand
+  if(forceRightHand>0)
+    s+= '-' + forceRightHand
+  if(forceLeftFoot>0)
+    s+= '-' + forceLeftFoot
+  if(forceRightFoot>0)
+    s+= '-' + forceRightFoot
+  return s;
+}
 //Reads the seed value input 
 function readSeed(){
   var input = $('#seedInput').val().trim() 
@@ -261,14 +252,12 @@ function loadSeed(input){
   
   generateAndStart();
 }
-
-function reset(){
-  context.resume()
-  clearInterval(schedulerTimer);
-  cursor = 0;
-  commandList = []
-  generateLengths()
+function shareSeed(){
+  window.history.pushState('seed', 'seed', '/AtActionPark/polyrhythmGenDev/master/index.html?'+generateSeed());
 }
+
+
+
 
 
 //SCHEDULER
@@ -366,7 +355,7 @@ Command.prototype.display = function(){
   return mute + '<div class="limbDiv" ><b>' + '<div class="inline '+ this.name + '">' + this.name + '</div>' + length + ' : ' + result +  '</b></div></br>'
 }
 
-
+//MAIN ALGO
 //generates the length of the sequence for each limb. Depending on the nbOfRhythms, all sequences' lengths could be the same or different
 function generateLengths(){
   //start by making sure that the resolution is in the array of possible lengths
@@ -545,7 +534,6 @@ function displayParams(){
     })
   })
 }
-
 function drawTab(){
   var result = ''
   var emptyDiv = '<div class="step">' + empty + '</div>'

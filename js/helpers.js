@@ -145,7 +145,7 @@ function isFla(limb,c){
   return limb == 'rightHand' && (commandList[1].sequenceRepeated[c] == commandList[2].sequenceRepeated[c])
 }
 
-
+//TODO
 function getMinPossibleLength(resolution, nbOfRyhthms){
   var m = 1;
   var arr = [4,5,6,8]
