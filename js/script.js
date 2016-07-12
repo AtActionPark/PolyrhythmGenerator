@@ -205,7 +205,7 @@ function readURL(){
 }
 
 function shareSeed(){
-  window.history.pushState('sed', 'Title', '/AtActionPark/polyrhythmGenDev/master/index.html?'+seed);
+  window.history.pushState('seed', 'Title', '/AtActionPark/polyrhythmGenDev/master/index.html');
 }
 
 //Reads the seed value input 
