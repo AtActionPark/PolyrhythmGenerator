@@ -205,7 +205,7 @@ function readURL(){
 }
 
 function shareSeed(){
-  window.history.pushState('seed', 'Title', '/AtActionPark/polyrhythmGenDev/master/index.html');
+  window.location.href = "http://rawgit.com/AtActionPark/polyrhythmGenDev/master/index.html"+seed;
 }
 
 //Reads the seed value input 
