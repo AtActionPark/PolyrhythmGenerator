@@ -81,7 +81,6 @@ var rideGain = 0.7
 var metronomeGain = 0.7
 
 var possibleSubdivisions = [2,4,8]
-var loaded = false
 
 
 $(document).ready(function(){
@@ -91,7 +90,8 @@ $(document).ready(function(){
   context.suspend()
 
   //async loading of all samples
-  //loadSamples();
+  loadSamples();
+  readURL()
 })
 
 //Concatenates all needed params for the seed
@@ -122,10 +122,6 @@ function generateSong(){
 
   // play the file
   source.start(0)
-  if(!loaded){
-    loaded = true
-    loadSamples()
-  }
 
   generateAndStart()
 }
@@ -199,6 +195,18 @@ function changeForce(){
   else
     $("#nbOfRhythms").prop('disabled', false);
 }
+function readURL(){
+  var url = window.location.href 
+  var captured
+  if(url.includes('?')){
+    var captured = /\?([^&]+)/.exec(url)[1]; 
+    loadSeed(captured)
+  }
+}
+
+function shareSeed(){
+  window.history.pushState('sed', 'Title', '/'+seed);
+}
 
 //Reads the seed value input 
 function readSeed(){
@@ -243,7 +251,6 @@ function loadSeed(input){
   $('#forceLeftFoot').val(parseInt(forceLeftFoot))
   forceRightFoot = parseFloat(s[12]) || 0
   $('#forceRightFoot').val(parseInt(forceRightFoot))
-  //changeForce()
 
   generationSeed = seed
   

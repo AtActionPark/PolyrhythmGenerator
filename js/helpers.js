@@ -154,7 +154,7 @@ function getMinPossibleLength(resolution, nbOfRyhthms){
   console.log(m)
   return m
 }
-getMinPossibleLength()
+//getMinPossibleLength()
 
 //classic webaudio api loader.Not my code
 function loadSamples(){

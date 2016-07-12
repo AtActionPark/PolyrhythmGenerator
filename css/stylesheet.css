@@ -50,7 +50,7 @@ select[disabled]{
 	padding: 10px;
 }
 
-#loadSeed{
+#loadSeed, #shareSeed{
 	margin-top:10px;
 }
 #seedInput{
