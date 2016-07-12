@@ -44,7 +44,7 @@ select[disabled]{
     padding: 0;
     list-style: none;
 }
-#params , #seedDiv{
+#params , #seedDiv, #forceDiv, #randomDiv{
 	margin: 20px;
 	border:1px solid white;
 	padding: 10px;
@@ -165,4 +165,8 @@ input[type=checkbox]:checked + label{
 #resolution{
     display:inline;
 }
+.explain{
+    font-size: 11px;
+}
+
 

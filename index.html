@@ -55,10 +55,11 @@
           <div id="leftFootDiv">Left foot : <input id="leftFoot"  type="checkbox" checked></div>
           <div id="orchestrateDiv">Orchestrate : <input id="orchestrate"  type="checkbox" checked></div>
           <button id="generate" class="btn btn-default" onClick="generateSong()">Generate</button>
-          <button id="random" class="btn btn-default" onClick="randomize()">Random</button></br>
+        </div>
 
-
-          <div>Force Length</div>
+        <p class="title">ADVANCED</p>
+        <div id="forceDiv">
+        <div><b>Chose Length</b></div></br>
           Left Hand: 
           <select  id="forceLeftHand" onchange="changeForce()">
             <option value="0" selected="selected">-</option>
@@ -114,7 +115,8 @@
             <option value="9">9</option>
             <option value="10">10</option>
             <option value="11">11</option>
-          </select>
+          </select></br></br>
+          <div class="explain">Changing those parameters will disable the Nb. of Rhythm param</div>
         </div>
         
         <p class="title">SEED</p>
@@ -124,7 +126,11 @@
    
           <input id='seedInput' type=numberBox size="22" min=1 /></br>
           <button id="loadSeed" class="btn btn-default" onClick="readSeed()">Load</button>
-          <button id="shareSeed" class="btn btn-default" onClick="shareSeed()">Share</button></br></br>
+          <button id="shareSeed" class="btn btn-default" onClick="shareSeed()">Get Seed url</button></br>
+        </div>
+        <p class="title">Randomize</p>
+        <div id="randomDiv">
+          <button id="random" class="btn btn-default" onClick="randomize()">Randomize all params</button></br>
         </div>
         
         <footer><a href="http://www.github.com/atactionpark/polyrhythmGenDev">Source on Github</a></footer>
