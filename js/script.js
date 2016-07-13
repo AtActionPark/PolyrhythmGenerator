@@ -92,6 +92,21 @@ $(document).ready(function(){
   loadSamples();
   //if url contains a seed, load it
   readURL()
+
+  window.addEventListener('touchstart', function() {
+
+  // create empty buffer
+  var buffer = context.createBuffer(1, 1, 22050);
+  var source = context.createBufferSource();
+  source.buffer = buffer;
+
+  // connect to output (your speakers)
+  source.connect(context.destination);
+
+  // play the file
+  source.start(0);
+
+}, false);
 })
 
 
