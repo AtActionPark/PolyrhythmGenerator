@@ -95,6 +95,12 @@ $(document).ready(function(){
   loadSamples();
   //if url contains a seed, load it
   readURL()
+
+  $(".tiptext").mouseover(function() {
+    $(this).children(".description").show();
+  }).mouseout(function() {
+      $(this).children(".description").hide();
+  });
 })
 
 //entry point for generation. 
@@ -185,7 +191,9 @@ function changeForceLength(){
   $("#forceLeftFoot").prop('disabled', !forceLength);
   $("#forceRightHand").prop('disabled', !forceLength);
   $("#forceRightFoot").prop('disabled', !forceLength);
+
   $("#nbOfRhythms").prop('disabled', forceLength);
+  $("#maxLength").prop('disabled', forceLength);
 }
 function changeForce(){
   forceLeftHand = parseInt($('#forceLeftHand').val())

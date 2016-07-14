@@ -12,6 +12,10 @@ select {
     color:black;
     margin-bottom:5px;
 }
+input[disabled]{
+    color: grey ;
+    background-color: #dddddd;
+}
 select[disabled]{
     color: grey ;
     background-color: #dddddd;
@@ -55,6 +59,7 @@ select[disabled]{
 }
 #seedInput{
     width:100%;
+    height:100%;
 }
 .title{
 	font-weight: bold;
@@ -168,5 +173,23 @@ input[type=checkbox]:checked + label{
 .explain{
     font-size: 11px;
 }
+
+.tiptext {
+    width:20px;
+    text-align: center;
+    display: inline-block;
+    cursor: help;
+    border-radius: 100%;
+    border: 1px solid white;
+    margin-right:5px;
+}
+.description {
+    display:none;
+    position:absolute;
+    border:1px solid #000;
+    background-color: white;
+    color: black;
+}
+
 
 
