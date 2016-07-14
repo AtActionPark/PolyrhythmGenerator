@@ -17,7 +17,7 @@ var nbOfRhythms = 1;
 
 //FIXED PARAMS
 // sequences length
-var minStep = 4;
+var minStep = 2;
 var maxStep = 11;
 var flaTime = 0.04
 var possibleSubdivisions = [2,4,8]
@@ -66,6 +66,7 @@ var rHandLength =0;
 var lFootLength = 0;
 var rFootLength = 0;
 
+var forceLength = false;
 var forceLeftHand = 0;
 var forceRightHand = 0;
 var forceLeftFoot = 0;
@@ -80,7 +81,7 @@ var rideSound = null;
 var highTomSound = null;
 var medTomSound = null;
 var floorTomSound = null;
-
+var maxTry = 500
 
 $(document).ready(function(){
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -93,20 +94,6 @@ $(document).ready(function(){
   //if url contains a seed, load it
   readURL()
 
-  window.addEventListener('touchstart', function() {
-
-  // create empty buffer
-  var buffer = context.createBuffer(1, 1, 22050);
-  var source = context.createBufferSource();
-  source.buffer = buffer;
-
-  // connect to output (your speakers)
-  source.connect(context.destination);
-
-  // play the file
-  source.start(0);
-
-}, false);
 })
 
 
@@ -127,7 +114,7 @@ function generateAndStart(){
   do {
     generateLengths()
     count++;
-  } while((max > maxLength  && count <500) || max > 200)
+  } while((max > maxLength  && count <maxTry))
 
   createDrumCommands()
   displayParams()
@@ -152,7 +139,10 @@ function getUserParams(){
   useLeftFoot = $("#leftFoot").is(':checked');
   orchestrate = $("#orchestrate").is(':checked');
 
-  changeForce()
+  if(forceLength)
+    changeForce()
+
+  checkMaxLength()
 }
 function randomize(){
   generationSeed = Math.random()*100
@@ -176,16 +166,19 @@ function changeTempo(){
     tempo = 1
   $('#seed').html(generateSeed(seed))
 }
+function changeForceLength(){
+  forceLength = $("#forceLength").is(':checked');
+  $("#forceLeftHand").prop('disabled', !forceLength);
+  $("#forceLeftFoot").prop('disabled', !forceLength);
+  $("#forceRightHand").prop('disabled', !forceLength);
+  $("#forceRightFoot").prop('disabled', !forceLength);
+  $("#nbOfRhythms").prop('disabled', forceLength);
+}
 function changeForce(){
   forceLeftHand = parseInt($('#forceLeftHand').val())
   forceRightHand = parseInt($('#forceRightHand').val())
   forceLeftFoot = parseInt($('#forceLeftFoot').val())
   forceRightFoot = parseInt($('#forceRightFoot').val())
-  if(forceLeftFoot>0 || forceRightFoot >0 || forceRightHand >0 || forceLeftHand>0){
-    $("#nbOfRhythms").prop('disabled', true);
-  }
-  else
-    $("#nbOfRhythms").prop('disabled', false);
 }
 function readURL(){
   var url = window.location.href 
@@ -203,10 +196,45 @@ function reset(){
   generateLengths()
 }
 
+function sortedFixedLength(){
+  return [forceLeftFoot, forceRightFoot, forceLeftHand, forceRightHand].sort(function(a, b){return a - b;});
+}
+function checkMaxLength(){
+  //compute the minimum length with params and compare with user expectation
+  var mini;
+  if(forceLength){
+    var fixedLength = sortedFixedLength()
+    var nbOfFixedRhythms = boolToInt(forceLeftFoot) + boolToInt(forceRightFoot) + boolToInt(forceLeftHand) + boolToInt(forceRightHand);
+    if(nbOfFixedRhythms == 1){
+      mini = minPossibleLength(fixedLength[3],4)
+    }
+    else if(nbOfFixedRhythms == 2){
+      mini = lcm(fixedLength[2],minPossibleLength(fixedLength[3],3))
+    }
+    else if(nbOfFixedRhythms == 3){
+      mini = lcm(fixedLength[1],lcm(fixedLength[2],minPossibleLength(fixedLength[3],2)))
+    }
+    else{
+      mini = lcm(fixedLength[0],lcm(fixedLength[1],lcm(fixedLength[2],fixedLength[3])))
+    }
+  }
+  else{
+    mini = minPossibleLength(resolution,nbOfRhythms)
+  }
+  console.log(mini)
+  if(mini>maxLength){
+    maxLength = mini
+    $('#maxLength').val(mini)
+    $('#maxLength').fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+  }
+}
+
+
 //SEED
 //Concatenates all needed params for the seed
 function generateSeed(){
   var s = parseInt(tempo) + '-' + parseInt(resolution) + '-'+ parseInt(subdivision) + '-' + parseInt(maxLength) + '-' + parseInt(densityCategory) + '-'+ parseInt(nbOfRhythms) +  '-' + (useLeftFoot?1:0) + '-' + (orchestrate?1:0) + '-' +  generationSeed 
+
   if(forceLeftHand>0)
     s+= '-' + forceLeftHand
   if(forceRightHand>0)
@@ -253,13 +281,22 @@ function loadSeed(input){
   seed = parseFloat(s[8]) || 1
 
   forceLeftHand = parseFloat(s[9]) || 0
-  $('#forceLeftHand').val(parseInt(forceLeftHand))
   forceRightHand = parseFloat(s[10]) || 0
-  $('#forceRightHand').val(parseInt(forceRightHand))
   forceLeftFoot = parseFloat(s[11]) || 0
-  $('#forceLeftFoot').val(parseInt(forceLeftFoot))
   forceRightFoot = parseFloat(s[12]) || 0
-  $('#forceRightFoot').val(parseInt(forceRightFoot))
+  forceLength = false;
+  $("#forceLength").prop('checked', forceLength);
+  changeForceLength()
+
+  if(forceRightFoot>0 || forceRightHand>0 || forceLeftFoot>0 || forceLeftHand >0){
+    forceLength = true
+    $("#forceLength").prop('checked', forceLength);
+    changeForceLength()
+    $('#forceLeftHand').val(parseInt(forceLeftHand))
+    $('#forceRightHand').val(parseInt(forceRightHand))
+    $('#forceLeftFoot').val(parseInt(forceLeftFoot))
+    $('#forceRightFoot').val(parseInt(forceRightFoot))
+  }
 
   generationSeed = seed
   
@@ -270,8 +307,6 @@ function loadSeed(input){
 function shareSeed(){
   window.history.pushState('seed', 'seed', '/AtActionPark/polyrhythmGenDev/master/index.html?'+generateSeed());
 }
-
-
 
 
 
@@ -418,21 +453,23 @@ function generateLengths(){
   rHandLength = lengths[2]
   rFootLength = lengths[3]
 
-  if(forceLeftHand != 0)
-    lHandLength = forceLeftHand
-  if(forceRightHand != 0)
-    rHandLength = forceRightHand
-  if(forceLeftFoot != 0)
-    lFootLength = forceLeftFoot
-  if(forceRightFoot != 0)
-    rFootLength = forceRightFoot
+  if(forceLength){
+     lHandLength = forceLeftHand 
+     lFootLength = forceLeftFoot 
+     rHandLength = forceRightHand 
+     rFootLength = forceRightFoot 
+  }
 
   lengths = [lFootLength,lHandLength,rFootLength,rHandLength]
 
   // compute the max number of steps of the song
-  max = 1;
-  for(var i = 0;i<lengths.length;i++)
-    max = lcm(max,lengths[i])
+  max = getLoopLength(lengths)
+}
+function getLoopLength(arr){
+  var result = 1;
+  for(var i = 0;i<arr.length;i++)
+    result = lcm(result,arr[i])
+  return result
 }
 //Generates sequence of notes based on random params and precalculated length
 function randomSequence(limb){

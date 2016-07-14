@@ -144,17 +144,52 @@ function getGain(instr){
 function isFla(limb,c){
   return limb == 'rightHand' && (commandList[1].sequenceRepeated[c] == commandList[2].sequenceRepeated[c])
 }
-
 //TODO
-function getMinPossibleLength(resolution, nbOfRyhthms){
-  var m = 1;
-  var arr = [4,5,6,8]
-  for(var i = 0;i<arr.length;i++)
-    m = lcm(m,arr[i])
-  console.log(m)
-  return m
+function minPossibleLength(knownLength, lengthsSize) {  
+  var lengths = []    
+  var min = 27720; // Maximum for bound range [2..11]
+  if (lengthsSize == 1)
+    return knownLength;
+  lengths[0] = knownLength;
+  for(var i = minStep; i<=maxStep; i++) {
+    if (i != knownLength) {
+      lengths[1] = i;
+      if (lengthsSize == 2) {
+          lengths[2] = i;
+          lengths[3] = i;
+          if (getLoopLength(lengths) < min) {
+            min = getLoopLength(lengths);
+            //console.log('lcm(['+knownLength+', '+i+']) = '+min); 
+          }
+        }
+      else
+      for(var j = minStep+1; j<=maxStep; j++) {
+        if (i != j && j!= knownLength) {
+          lengths[2] = j;
+        if (lengthsSize == 3) {
+          lengths[3] = j;
+          if (getLoopLength(lengths) < min) {
+            min = getLoopLength(lengths);
+            //console.log('lcm(['+knownLength+', '+i+', '+j+']) = '+min); 
+          }
+        }
+      else
+          for(var k = minStep+2; k<=maxStep; k++) {
+            if (i != k && j != k && k!= knownLength) {
+              lengths[3] = k;
+              if (getLoopLength(lengths) < min) {
+                min = getLoopLength(lengths);
+                //console.log('lcm(['+knownLength+', '+i+', '+j+', '+k+']) = '+min); 
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  return min;
 }
-//getMinPossibleLength()
+
 
 //classic webaudio api loader.Not my code
 function loadSamples(){
@@ -246,6 +281,10 @@ function finishedLoading(bufferList) {
 
   floorTomSound = context.createBufferSource();
   floorTomSound.buffer = bufferList[8];
+}
+
+function boolToInt(bool){
+  return bool? 1: 0;
 }
 
 

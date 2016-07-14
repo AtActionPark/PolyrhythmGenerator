@@ -34,7 +34,7 @@
             <option value="4" selected="selected">4</option>
             <option value="8">8</option>
           </select></br>
-          Max Length: <input id='maxLength'  class="med" value = '72' type=number min=1 max=120 /></br>
+          Max Length: <input id='maxLength'  class="bg" value = '72' type=number min=1 max=120 /></br>
           
           Density:
           <select id="density">
@@ -59,13 +59,12 @@
 
         <p class="title">ADVANCED</p>
         <div id="forceDiv">
-        <div><b>Chose Length</b></div></br>
+        <b>Chose Length  </b><input id="forceLength" type="checkbox" onchange="changeForceLength()"></br></br>
           Left Hand: 
-          <select  id="forceLeftHand" onchange="changeForce()">
-            <option value="0" selected="selected">-</option>
+          <select  id="forceLeftHand" disabled onchange="changeForce()">
             <option value="2">2</option>
             <option value="3">3</option>
-            <option value="4" >4</option>
+            <option value="4" selected="selected">4</option>
             <option value="5">5</option>
             <option value="6">6</option>
             <option value="7">7</option>
@@ -75,11 +74,10 @@
             <option value="11">11</option>
           </select></br>
           Right Hand: 
-          <select id="forceRightHand" onchange="changeForce()">
-            <option value="0" selected="selected">-</option>
+          <select id="forceRightHand" disabled onchange="changeForce()">
             <option value="2">2</option>
             <option value="3">3</option>
-            <option value="4" >4</option>
+            <option value="4" selected="selected">4</option>
             <option value="5">5</option>
             <option value="6">6</option>
             <option value="7">7</option>
@@ -89,11 +87,10 @@
             <option value="11">11</option>
           </select></br>
           Left Foot: 
-          <select id="forceLeftFoot" onchange="changeForce()">
-            <option value="0" selected="selected">-</option>
+          <select id="forceLeftFoot" disabled onchange="changeForce()">
             <option value="2">2</option>
             <option value="3">3</option>
-            <option value="4" >4</option>
+            <option value="4" selected="selected">4</option>
             <option value="5">5</option>
             <option value="6">6</option>
             <option value="7">7</option>
@@ -103,11 +100,10 @@
             <option value="11">11</option>
           </select></br>
           Right Foot: 
-          <select id="forceRightFoot" onchange="changeForce()">
-            <option value="0" selected="selected">-</option>
+          <select id="forceRightFoot" disabled onchange="changeForce()">
             <option value="2">2</option>
             <option value="3">3</option>
-            <option value="4" >4</option>
+            <option value="4" selected="selected">4</option>
             <option value="5">5</option>
             <option value="6">6</option>
             <option value="7">7</option>
