@@ -29,7 +29,10 @@ var lFootDensityFactor = 0.5;
 var rFootDensityFactor = 0.6;
 
 var seedPrecision = 5;
+var maxTry = 500;
+var metronomeMute = true;
 
+//mixer volumes
 var snareGain = 0.7
 var kickGain = 1
 var clHiHatGain = 1
@@ -56,7 +59,6 @@ var play = true;
 var context;
 var bufferLoader;
 var empty = '-';
-var metronomeMute = true;
 var generationSeed;
 var seed;
 var density;
@@ -81,7 +83,7 @@ var rideSound = null;
 var highTomSound = null;
 var medTomSound = null;
 var floorTomSound = null;
-var maxTry = 500
+
 
 $(document).ready(function(){
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -93,10 +95,9 @@ $(document).ready(function(){
   loadSamples();
   //if url contains a seed, load it
   readURL()
-
 })
 
-
+//entry point for generation. 
 function generateSong(){
   generationSeed = Math.random()*100
   generationSeed = generationSeed.toFixed(seedPrecision)
@@ -110,15 +111,26 @@ function generateAndStart(){
   getUserParams()
   $('#seed').html(generateSeed(seed))
 
-  var count = 0
-  do {
-    generateLengths()
-    count++;
-  } while((max > maxLength  && count <maxTry))
+  //Need to check against specified max desired length
+
+  //if user specified all lengths, max length is not variable
+  if(forceLength){
+    generateLengths();
+  }
+  // else, give the generator a few tries to find it
+  else{
+    var count = 0
+    do {
+      generateLengths();
+      count++;
+    } while((max > maxLength  && count <maxTry))  
+  }
+  
 
   createDrumCommands()
   displayParams()
   drawTab()
+
   setInterval(scheduler, 20);
   play = true;
 }
@@ -129,7 +141,8 @@ function getUserParams(){
   tempo = parseInt($('#tempo').val())
 
   maxLength = parseInt($('#maxLength').val())
-  maxLength = Math.max(maxLength, resolution)
+  if(maxLength<resolution)
+    replaceMaxLength(resolution)
 
   densityCategory = parseInt($('#density').val())
   density = densityCategory*25
@@ -196,37 +209,20 @@ function reset(){
   generateLengths()
 }
 
-function sortedFixedLength(){
-  return [forceLeftFoot, forceRightFoot, forceLeftHand, forceRightHand].sort(function(a, b){return a - b;});
-}
+
+//compute the minimum length with params and compare with user expectation
 function checkMaxLength(){
-  //compute the minimum length with params and compare with user expectation
-  var mini;
-  if(forceLength){
-    var fixedLength = sortedFixedLength()
-    var nbOfFixedRhythms = boolToInt(forceLeftFoot) + boolToInt(forceRightFoot) + boolToInt(forceLeftHand) + boolToInt(forceRightHand);
-    if(nbOfFixedRhythms == 1){
-      mini = minPossibleLength(fixedLength[3],4)
-    }
-    else if(nbOfFixedRhythms == 2){
-      mini = lcm(fixedLength[2],minPossibleLength(fixedLength[3],3))
-    }
-    else if(nbOfFixedRhythms == 3){
-      mini = lcm(fixedLength[1],lcm(fixedLength[2],minPossibleLength(fixedLength[3],2)))
-    }
-    else{
-      mini = lcm(fixedLength[0],lcm(fixedLength[1],lcm(fixedLength[2],fixedLength[3])))
+  if(!forceLength){
+    var mini = minPossibleLength(resolution,nbOfRhythms)
+    if(mini>maxLength){
+      replaceMaxLength(mini)
     }
   }
-  else{
-    mini = minPossibleLength(resolution,nbOfRhythms)
-  }
-  console.log(mini)
-  if(mini>maxLength){
-    maxLength = mini
-    $('#maxLength').val(mini)
-    $('#maxLength').fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
-  }
+}
+function replaceMaxLength(mini){
+  maxLength = mini
+  $('#maxLength').val(mini)
+  $('#maxLength').fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
 }
 
 
@@ -305,6 +301,7 @@ function loadSeed(input){
   generateAndStart();
 }
 function shareSeed(){
+  //
   window.history.pushState('seed', 'seed', '/AtActionPark/polyrhythmGenDev/master/index.html?'+generateSeed());
 }
 

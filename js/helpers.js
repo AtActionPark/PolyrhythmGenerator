@@ -144,7 +144,7 @@ function getGain(instr){
 function isFla(limb,c){
   return limb == 'rightHand' && (commandList[1].sequenceRepeated[c] == commandList[2].sequenceRepeated[c])
 }
-//TODO
+//Thx Tomáš Kratochvíla @ http://stackoverflow.com/questions/38323525/minimum-least-common-multiplier-for-random-combinations
 function minPossibleLength(knownLength, lengthsSize) {  
   var lengths = []    
   var min = 27720; // Maximum for bound range [2..11]
@@ -283,9 +283,6 @@ function finishedLoading(bufferList) {
   floorTomSound.buffer = bufferList[8];
 }
 
-function boolToInt(bool){
-  return bool? 1: 0;
-}
 
 
 
