@@ -290,6 +290,7 @@ function loadSeed(input){
 
   var reconvertedParams = convertBase(convertedParams,64,13)
   var reconvertedSeed = convertBase(convertedSeed,64,10)
+  if(convertedForce)
   var reconvertedForce = convertBase(convertedForce,64,12)
   var params = reconvertedParams.split(/-/g)
 
