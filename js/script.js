@@ -224,6 +224,7 @@ function readURL(){
   var captured
   if(url.includes('?')){
     var captured = /\?([^&]+)/.exec(url)[1]; 
+    console.log(captured)
     loadSeed(captured)
   }
 }
