@@ -282,6 +282,73 @@ function finishedLoading(bufferList) {
   floorTomSound = context.createBufferSource();
   floorTomSound.buffer = bufferList[8];
 }
+function bjorklund(steps, pulses) {
+  
+  steps = Math.round(steps);
+  pulses = Math.round(pulses);  
+
+  if(pulses > steps || pulses == 0 || steps == 0) {
+    return new Array();
+  }
+
+  var pattern = [];
+  var    counts = [];
+  var   remainders = [];
+  var   divisor = steps - pulses;
+  remainders.push(pulses);
+  var level = 0;
+
+  while(true) {
+    counts.push(Math.floor(divisor / remainders[level]));
+    remainders.push(divisor % remainders[level]);
+    divisor = remainders[level]; 
+         level += 1;
+    if (remainders[level] <= 1) {
+      break;
+    }
+  }
+  
+  counts.push(divisor);
+
+  var r = 0;
+  var build = function(level) {
+    r++;
+    if (level > -1) {
+      for (var i=0; i < counts[level]; i++) {
+        build(level-1); 
+      } 
+      if (remainders[level] != 0) {
+            build(level-2);
+      }
+    } else if (level == -1) {
+             pattern.push(0); 
+    } else if (level == -2) {
+           pattern.push(1);        
+    } 
+  };
+
+  build(level);
+  return pattern.reverse();
+}
+
+
+function convertBase(value, from_base, to_base) {
+  var range = '0123456789ab-cdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/'.split('');
+  var from_range = range.slice(0, from_base);
+  var to_range = range.slice(0, to_base);
+  
+  var dec_value = value.split('').reverse().reduce(function (carry, digit, index) {
+    if (from_range.indexOf(digit) === -1) throw new Error('Invalid digit `'+digit+'` for base '+from_base+'.');
+    return carry += from_range.indexOf(digit) * (Math.pow(from_base, index));
+  }, 0);
+  
+  var new_value = '';
+  while (dec_value > 0) {
+    new_value = to_range[dec_value % to_base] + new_value;
+    dec_value = (dec_value - (dec_value % to_base)) / to_base;
+  }
+  return new_value || '0';
+}
 
 
 

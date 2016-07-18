@@ -1,5 +1,5 @@
 'use strict';
-
+//vAskTEEK@fm7@2dd
 // USER PARAMS
 var tempo = 60.0;
 //nb of steps per bar
@@ -12,6 +12,7 @@ var densityCategory = 2;
 var maxLength = 64;
 var useLeftFoot = true;
 var orchestrate = true;
+var euclideanRhythm = false;
 //0-1, linear. Used to calculate length and organisation of sequences 
 var nbOfRhythms = 1;
 
@@ -19,8 +20,10 @@ var nbOfRhythms = 1;
 // sequences length
 var minStep = 2;
 var maxStep = 11;
-var flaTime = 0.04
-var possibleSubdivisions = [2,4,8]
+var flaTime = 0.04;
+var possibleSubdivisions = [2,4,8];
+
+
 
 //limb bias - some limbs will play a higher average nb of notes
 var lHandDensityFactor = 0.7;
@@ -33,16 +36,16 @@ var maxTry = 500;
 var metronomeMute = true;
 
 //mixer volumes
-var snareGain = 0.7
-var kickGain = 1
-var clHiHatGain = 1
-var opHiHatGain = 1
-var footHiHatGain = 1
-var highTomGain = 1
-var medTomGain = 1
-var floorTomGain = 1
-var rideGain = 0.7
-var metronomeGain = 0.7
+var snareGain = 0.7;
+var kickGain = 1;
+var clHiHatGain = 1;
+var opHiHatGain = 1;
+var footHiHatGain = 1;
+var highTomGain = 1;
+var medTomGain = 1;
+var floorTomGain = 1;
+var rideGain = 0.7;
+var metronomeGain = 0.7;
 
 
 //SCHEDULER
@@ -52,7 +55,7 @@ var schedulerTimer;
 var nextNoteTime = 0.0;
 
 //stuff
-var commandList = []
+var commandList = [];
 var cursor = 0;
 var max = 1;
 var play = true;
@@ -85,6 +88,8 @@ var medTomSound = null;
 var floorTomSound = null;
 
 
+
+
 $(document).ready(function(){
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -105,11 +110,11 @@ $(document).ready(function(){
 
 //entry point for generation. 
 function generateSong(){
-  generationSeed = Math.random()*100
-  generationSeed = generationSeed.toFixed(seedPrecision)
-  seed = generationSeed
+  generationSeed = Math.random();
+  generationSeed = generationSeed.toFixed(seedPrecision);
+  seed = generationSeed;
 
-  generateAndStart()
+  generateAndStart();
 }
 function generateAndStart(){
   reset()
@@ -157,6 +162,7 @@ function getUserParams(){
 
   useLeftFoot = $("#leftFoot").is(':checked');
   orchestrate = $("#orchestrate").is(':checked');
+  euclideanRhythm = $("#euclidean").is(':checked');
 
   if(forceLength)
     changeForce()
@@ -164,20 +170,32 @@ function getUserParams(){
   checkMaxLength()
 }
 function randomize(){
-  generationSeed = Math.random()*100
-  generationSeed = generationSeed.toFixed(seedPrecision)
+  generationSeed = Math.random();
+  generationSeed = generationSeed.toFixed(seedPrecision);
+  seed = generationSeed
+  console.log(generationSeed)
 
   var t = getRandomInt(30,120);
-  var res = getRandomInt(2,9);
+  console.log(t)
+  $('#tempo').val(t);
+  var r = getRandomInt(2,9);
+  $('#resolution').val(r);
   var sub = pickRandomArray(possibleSubdivisions);
-  var mxL = getRandomInt(20,120);
-  var de = getRandomInt(0,4);
-  var rh = getRandomInt(2,4);
-  var lF = getRandomInt(0,1);
+  $('#subdivision').val(sub);
+  var mxl = getRandomInt(20,80);
+  $('#maxLength').val(mxl);
+  var d = getRandomInt(0,4);
+  $('#density').val(d);
+  var nbr = getRandomInt(2,4);
+  $('#nbOfRhythms').val(nbr);
+  var lf = getRandomInt(0,1);
+  $('#leftFoot').prop('checked', lf);
   var or = getRandomInt(0,1);
-  var randomGenSeed = t + '-' + res+ '-' + sub+ '-' +mxL + '-' +de+ '-' + rh + '-'+lF+ '-' +or+ '-' +generationSeed
+  $('#orchestrate').prop('checked', or);
+  var eu = getRandomInt(0,1);
+  $('#euclidean').prop('checked', eu);
+  generateSong();
 
-  loadSeed(randomGenSeed)
 }
 function changeTempo(){
   tempo = parseInt($('#tempo').val())
@@ -237,17 +255,25 @@ function replaceMaxLength(mini){
 //SEED
 //Concatenates all needed params for the seed
 function generateSeed(){
-  var s = parseInt(tempo) + '-' + parseInt(resolution) + '-'+ parseInt(subdivision) + '-' + parseInt(maxLength) + '-' + parseInt(densityCategory) + '-'+ parseInt(nbOfRhythms) +  '-' + (useLeftFoot?1:0) + '-' + (orchestrate?1:0) + '-' +  generationSeed 
+  var subString = convertBase(resolution.toString(),10,12) + ''+ parseInt(subdivision) + ''  + parseInt(densityCategory) + ''+ parseInt(nbOfRhythms) +  '' + (useLeftFoot?1:0) + '' + (orchestrate?1:0) + '' + (euclideanRhythm?1:0)
+  var s = parseInt(tempo) + '-' + parseInt(maxLength) + '-' + subString  
 
-  if(forceLeftHand>0)
-    s+= '-' + forceLeftHand
-  if(forceRightHand>0)
-    s+= '-' + forceRightHand
-  if(forceLeftFoot>0)
-    s+= '-' + forceLeftFoot
-  if(forceRightFoot>0)
-    s+= '-' + forceRightFoot
-  return s;
+  var convertedParams = convertBase(s,13,64)
+  var convertedSeed = convertBase(Math.floor(generationSeed * 100000).toString(),10,64)
+
+  var result = convertedParams + '@' +  convertedSeed
+
+  if(forceLength){
+    var forceString = '';
+    forceString+= convertBase(forceLeftHand.toString(),10,12)
+    forceString+= '' + convertBase(forceRightHand.toString(),10,12)
+    forceString+= '' + convertBase(forceLeftFoot.toString(),10,12)
+    forceString+= '' + convertBase(forceRightFoot.toString(),10,12)
+    var convertedForceString = convertBase(forceString,12,64)
+    result+= '@'+ convertedForceString
+  }
+  //console.log(result)
+  return result;
 }
 //Reads the seed value input 
 function readSeed(){
@@ -256,41 +282,67 @@ function readSeed(){
 }
 //generates a song according to the seed
 function loadSeed(input){
-  var s =input.split(/-/g)
-  tempo = parseInt(s[0]) || 60
+  var s =input.split(/@/g)
+  var convertedParams = s[0]
+  var convertedSeed = s[1]
+  var convertedForce = s[2]
+
+  var reconvertedParams = convertBase(convertedParams,64,13)
+  var reconvertedSeed = convertBase(convertedSeed,64,10)
+  var reconvertedForce = convertBase(convertedForce,64,12)
+  var params = reconvertedParams.split(/-/g)
+
+  tempo = parseInt(params[0]) || 60
   $('#tempo').val(tempo)
 
-  resolution = parseInt(s[1]) ||4
-  $('#resolution').val(resolution)
 
-  subdivision = parseInt(s[2]) ||4
-  $('#subdivision').val(subdivision)
-
-  maxLength = parseInt(s[3]) || 32
+  maxLength = parseInt(params[1]) || 32
   $('#maxLength').val(maxLength)
 
-  densityCategory = parseInt(s[4]) || 0.5
+  var paramsSubString = params[2].toString()
+  paramsSubString = paramsSubString.split('')
+  console.log("paramsSubString: " + paramsSubString)
+
+  resolution = parseInt(convertBase(paramsSubString[0].toString(),12,10)) ||4
+  $('#resolution').val(resolution)
+
+  subdivision = paramsSubString[1] ||4
+  $('#subdivision').val(subdivision)
+
+
+  densityCategory = paramsSubString[2] || 0.5
   $('#density').val(parseInt(densityCategory))
   density = densityCategory*25
 
-  nbOfRhythms = parseInt(s[5]) || 2
+  nbOfRhythms = paramsSubString[3] || 2
   $('#nbOfRhythms').val(parseInt(nbOfRhythms))
 
-  useLeftFoot = parseInt(s[6]) ==0? false: true|| false
+  useLeftFoot = paramsSubString[4] ==0? false: true|| false
   $('#leftFoot').prop('checked', useLeftFoot);
 
-  orchestrate = parseInt(s[7]) ==0? false: true|| false
+  orchestrate = paramsSubString[5] ==0? false: true|| false
   $('#orchestrate').prop('checked', orchestrate);
 
-  seed = parseFloat(s[8]) || 1
+  euclideanRhythm = paramsSubString[6] ==0? false: true|| false
+  $('#euclidean').prop('checked', euclideanRhythm);
 
-  forceLeftHand = parseFloat(s[9]) || 0
-  forceRightHand = parseFloat(s[10]) || 0
-  forceLeftFoot = parseFloat(s[11]) || 0
-  forceRightFoot = parseFloat(s[12]) || 0
-  forceLength = false;
-  $("#forceLength").prop('checked', forceLength);
-  changeForceLength()
+  seed = parseFloat(reconvertedSeed)/100000 || 1
+  console.log(seed)
+
+  forceLeftHand = 0;
+  forceRightHand = 0;
+  forceLeftFoot = 0;
+  forceRightFoot = 0;
+  if(reconvertedForce!= null){
+    var force = reconvertedForce.split('')
+    forceLeftHand = parseInt(convertBase(force[0],12,10)) || 0
+    forceRightHand = parseInt(convertBase(force[1],12,10)) || 0
+    forceLeftFoot = parseInt(convertBase(force[2],12,10)) || 0
+    forceRightFoot = parseInt(convertBase(force[3],12,10)) || 0
+    forceLength = false;
+    $("#forceLength").prop('checked', forceLength);
+    changeForceLength()
+  }
 
   if(forceRightFoot>0 || forceRightHand>0 || forceLeftFoot>0 || forceLeftHand >0){
     forceLength = true
@@ -478,9 +530,22 @@ function getLoopLength(arr){
 }
 //Generates sequence of notes based on random params and precalculated length
 function randomSequence(limb){
+  if(euclideanRhythm){
+    var pulses = parseInt(getRandomInt(minStep,getLength(limb.name)*getDensity(limb.name)/100))
+    var pattern = bjorklund(getLength(limb.name),pulses);
+    for(var i = 0;i<pattern.length;i++){
+      if(pattern[i] == 1)
+        pattern[i] = pickRandomArray(limb.instruments)
+      else
+        pattern[i] = empty
+    }
+    //console.log(pattern)
+    return pattern
+  }
+  
+
   var seq = []
   var stepsAdded = 0
-
   //Initialize the sequence with all empty steps
   for(var i = 0;i<getLength(limb.name);i++){
     var instrument = pickRandomArray(limb.instruments)
