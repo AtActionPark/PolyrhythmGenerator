@@ -92,53 +92,51 @@ var iOS;
 var locked = true;
 $(document).ready(function(){
   var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-  alert(iOS)
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
   context = new AudioContext
-  context.suspend()
 
-  
   //if url contains a seed, load it
   readURL()
 
-  $(".tiptext").mouseover(function() {
-    $(this).children(".description").show();
-  }).mouseout(function() {
-      $(this).children(".description").hide();
-  });
+  
 
   if(iOS){
-    window.addEventListener('touchend', function() {
-
-      if (locked){
-         // create empty buffer
-        var buffer = context.createBuffer(1, 1, 22050);
-        var source = context.createBufferSource();
-        source.buffer = buffer;
-
-        // connect to output (your speakers)
-        source.connect(myContext.destination);
-
-        // play the file
-        source.start(0);
-        locked = false;
-        loadSamples();
-        alert('unlocked')
-      }
-    }, false);
+    window.addEventListener('touchend',iosHandler , false);
     
   }
   else{
-      //async loading of all samples
-  loadSamples();
-  }
+    context.suspend()
 
-  //ios test
-  
+    //async loading of all samples
+    loadSamples();
+    $(".tiptext").mouseover(function() {
+      $(this).children(".description").show();
+    }).mouseout(function() {
+        $(this).children(".description").hide();
+    });
+  }
 })
 
+function iosHandler(){
+  if (locked){
+    locked = false;
+    context = new AudioContext
+     // create empty buffer
+    var buffer = context.createBuffer(1, 1, 22050);
+    var source = context.createBufferSource();
+    source.buffer = buffer;
 
+    // connect to output (your speakers)
+    source.connect(myContext.destination);
+
+    // play the file
+    source.start(0);
+    
+    loadSamples();
+    alert('unlocked')
+  }
+}
 
 //entry point for generation. 
 function generateSong(){
