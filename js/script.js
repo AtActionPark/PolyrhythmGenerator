@@ -95,19 +95,16 @@ $(document).ready(function(){
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
   context = new AudioContext
+  context.suspend()
 
   //if url contains a seed, load it
   readURL()
 
-  
 
   if(iOS){
     window.addEventListener('touchend',iosHandler , false);
-    
   }
   else{
-    context.suspend()
-
     //async loading of all samples
     loadSamples();
     $(".tiptext").mouseover(function() {
@@ -119,9 +116,9 @@ $(document).ready(function(){
 })
 
 function iosHandler(){
+  alert('touched')
   if (locked){
     locked = false;
-    context = new AudioContext
      // create empty buffer
     var buffer = context.createBuffer(1, 1, 22050);
     var source = context.createBufferSource();
