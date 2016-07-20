@@ -117,22 +117,15 @@ $(document).ready(function(){
 
 function iosHandler(e){
   if (locked){
-    window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
-  context = new AudioContext
-  context.suspend()
     alert('unlocked')
     locked = false;
-     // create empty buffer
+    // create empty buffer
     var buffer = context.createBuffer(1, 1, 22050);
     var source = context.createBufferSource();
     source.buffer = buffer;
-
-    // connect to output (your speakers)
     source.connect(context.destination);
-
-    // play the file
-    source.start(0);
+    source.noteOn(0);
     
     loadSamples();
   }
