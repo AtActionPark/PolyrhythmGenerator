@@ -117,7 +117,6 @@ $(document).ready(function(){
 
 function iosHandler(e){
   e.preventDefault()
-  alert('touched')
   if (locked){
     locked = false;
      // create empty buffer
