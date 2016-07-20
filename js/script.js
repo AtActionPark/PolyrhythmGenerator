@@ -116,8 +116,9 @@ $(document).ready(function(){
 })
 
 function iosHandler(e){
-  e.preventDefault()
+  //e.preventDefault();
   if (locked){
+    alert('unlocked')
     locked = false;
      // create empty buffer
     var buffer = context.createBuffer(1, 1, 22050);
@@ -131,7 +132,7 @@ function iosHandler(e){
     source.start(0);
     
     loadSamples();
-    alert('unlocked')
+    
   }
 }
 
