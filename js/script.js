@@ -116,8 +116,11 @@ $(document).ready(function(){
 })
 
 function iosHandler(e){
-  //e.preventDefault();
   if (locked){
+    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+
+  context = new AudioContext
+  context.suspend()
     alert('unlocked')
     locked = false;
      // create empty buffer
@@ -132,7 +135,6 @@ function iosHandler(e){
     source.start(0);
     
     loadSamples();
-    
   }
 }
 
