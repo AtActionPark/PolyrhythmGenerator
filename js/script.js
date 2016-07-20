@@ -90,7 +90,6 @@ var floorTomSound = null;
 
 
 var locked = true;
-var ios;
 $(document).ready(function(){
   var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
