@@ -88,10 +88,11 @@ var medTomSound = null;
 var floorTomSound = null;
 
 
-
+var iOS;
 var locked = true;
 $(document).ready(function(){
   var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  alert(iOS)
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
   context = new AudioContext
@@ -108,23 +109,25 @@ $(document).ready(function(){
   });
 
   if(iOS){
-    window.addEventListener('touchstart', function() {
+    window.addEventListener('touchend', function() {
 
-      if (!locked)
-        return
-      // create empty buffer
-      var buffer = myContext.createBuffer(1, 1, 22050);
-      var source = myContext.createBufferSource();
-      source.buffer = buffer;
+      if (locked){
+         // create empty buffer
+        var buffer = context.createBuffer(1, 1, 22050);
+        var source = context.createBufferSource();
+        source.buffer = buffer;
 
-      // connect to output (your speakers)
-      source.connect(myContext.destination);
+        // connect to output (your speakers)
+        source.connect(myContext.destination);
 
-      // play the file
-      source.start(0);
-      locked = false;
+        // play the file
+        source.start(0);
+        locked = false;
+        loadSamples();
+        alert('unlocked')
+      }
     }, false);
-    loadSamples();
+    
   }
   else{
       //async loading of all samples
