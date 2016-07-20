@@ -1,5 +1,5 @@
 'use strict';
-//vAskTEEK@fm7@2dd
+
 // USER PARAMS
 var tempo = 60.0;
 //nb of steps per bar
@@ -26,10 +26,10 @@ var possibleSubdivisions = [2,4,8];
 
 
 //limb bias - some limbs will play a higher average nb of notes
-var lHandDensityFactor = 0.7;
-var rHandDensityFactor = 0.8;
-var lFootDensityFactor = 0.5;
-var rFootDensityFactor = 0.6;
+var lHandDensityFactor = 1;
+var rHandDensityFactor = 1;
+var lFootDensityFactor = 0.7;
+var rFootDensityFactor = 0.8;
 
 var seedPrecision = 5;
 var maxTry = 500;
@@ -89,15 +89,16 @@ var floorTomSound = null;
 
 
 
-
+var locked = true;
+var ios;
 $(document).ready(function(){
+  var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
   context = new AudioContext
   context.suspend()
 
-  //async loading of all samples
-  loadSamples();
+  
   //if url contains a seed, load it
   readURL()
 
@@ -106,7 +107,36 @@ $(document).ready(function(){
   }).mouseout(function() {
       $(this).children(".description").hide();
   });
+
+  if(iOS){
+    window.addEventListener('touchstart', function() {
+
+      if (!locked)
+        return
+      // create empty buffer
+      var buffer = myContext.createBuffer(1, 1, 22050);
+      var source = myContext.createBufferSource();
+      source.buffer = buffer;
+
+      // connect to output (your speakers)
+      source.connect(myContext.destination);
+
+      // play the file
+      source.start(0);
+      locked = false;
+    }, false);
+    loadSamples();
+  }
+  else{
+      //async loading of all samples
+  loadSamples();
+  }
+
+  //ios test
+  
 })
+
+
 
 //entry point for generation. 
 function generateSong(){
@@ -297,7 +327,6 @@ function loadSeed(input){
   tempo = parseInt(params[0]) || 60
   $('#tempo').val(tempo)
 
-
   maxLength = parseInt(params[1]) || 32
   $('#maxLength').val(maxLength)
 
@@ -314,7 +343,7 @@ function loadSeed(input){
 
   densityCategory = paramsSubString[2] || 0.5
   $('#density').val(parseInt(densityCategory))
-  density = densityCategory*25
+  density = densityCategory*20
 
   nbOfRhythms = paramsSubString[3] || 2
   $('#nbOfRhythms').val(parseInt(nbOfRhythms))
@@ -533,7 +562,7 @@ function getLoopLength(arr){
 //Generates sequence of notes based on random params and precalculated length
 function randomSequence(limb){
   if(euclideanRhythm){
-    var pulses = parseInt(getRandomInt(minStep,getLength(limb.name)*getDensity(limb.name)/100))
+    var pulses = parseInt(getRandomInt(minStep,getLength(limb.name)*1.0*getDensity(limb.name)/100))
     var pattern = bjorklund(getLength(limb.name),pulses);
     for(var i = 0;i<pattern.length;i++){
       if(pattern[i] == 1)
