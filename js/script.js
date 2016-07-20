@@ -115,7 +115,8 @@ $(document).ready(function(){
   }
 })
 
-function iosHandler(){
+function iosHandler(e){
+  e.preventDefault()
   alert('touched')
   if (locked){
     locked = false;
