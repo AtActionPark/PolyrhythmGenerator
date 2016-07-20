@@ -126,7 +126,7 @@ function iosHandler(e){
     source.buffer = buffer;
 
     // connect to output (your speakers)
-    source.connect(myContext.destination);
+    source.connect(context.destination);
 
     // play the file
     source.start(0);
