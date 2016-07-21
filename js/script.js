@@ -13,7 +13,6 @@ var maxLength = 64;
 var useLeftFoot = true;
 var orchestrate = true;
 var euclideanRhythm = false;
-//0-1, linear. Used to calculate length and organisation of sequences 
 var nbOfRhythms = 1;
 
 //FIXED PARAMS
@@ -22,7 +21,6 @@ var minStep = 2;
 var maxStep = 11;
 var flaTime = 0.04;
 var possibleSubdivisions = [2,4,8];
-
 
 
 //limb bias - some limbs will play a higher average nb of notes
@@ -87,19 +85,14 @@ var highTomSound = null;
 var medTomSound = null;
 var floorTomSound = null;
 
-
-var iOS;
 var locked = true;
+
 $(document).ready(function(){
   var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
-  context = new AudioContext
-  context.suspend()
-
-  //if url contains a seed, load it
-  readURL()
-
+  context = new AudioContext;
+  context.suspend();
 
   if(iOS){
     window.addEventListener('touchend',iosHandler , false);
@@ -107,6 +100,7 @@ $(document).ready(function(){
   else{
     //async loading of all samples
     loadSamples();
+    readURL();
     $(".tiptext").mouseover(function() {
       $(this).children(".description").show();
     }).mouseout(function() {
@@ -128,6 +122,7 @@ function iosHandler(e){
     source.noteOn(0);
     
     loadSamples();
+    readURL();
   }
 }
 
