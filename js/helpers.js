@@ -141,6 +141,25 @@ function getGain(instr){
   else if (instr == 'ride')
     return rideGain
 }
+function getColor(limb,fla){
+  if(fla){
+    return "purple";
+  }
+  if(limb == 'rightFoot')
+    return "black"
+  else if (limb == 'leftFoot')
+    return "gray"
+  else if (limb == 'rightHand')
+    return "red"
+  else if (limb == 'leftHand')
+    return "blue"
+}
+function getOppositeColor(limb){
+  if (limb == 'rightHand')
+    return "blue"
+  else if (limb == 'leftHand')
+    return "red"
+}
 function isFla(limb,c){
   return limb == 'rightHand' && (commandList[1].sequenceRepeated[c] == commandList[2].sequenceRepeated[c])
 }

@@ -86,6 +86,8 @@ var medTomSound = null;
 var floorTomSound = null;
 
 var locked = true;
+var canvas;
+var ctx;
 
 $(document).ready(function(){
   var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
@@ -93,6 +95,7 @@ $(document).ready(function(){
 
   context = new AudioContext;
   context.suspend();
+  initCanvas();
 
   if(iOS){
     window.addEventListener('touchend',iosHandler , false);
@@ -156,9 +159,10 @@ function generateAndStart(){
   }
   
 
-  createDrumCommands()
-  displayParams()
-  drawTab()
+  createDrumCommands();
+  displayParams();
+  //drawTab();
+  drawSheet();
 
   setInterval(scheduler, 20);
   play = true;
@@ -394,12 +398,12 @@ function nextNote(){
   var c = cursor+1
   cursor++;
 
-  $('#step').html('<b>Steps : </b>' + c + '/' + max )
-  $('.sheetLine .step').css({"border-bottom-width":"0px"});
-  $('.sheetLine .step:nth-child('+ (c+1) + ')' ).css({"border-bottom-color": "black", 
-             "border-bottom-width":"1px", 
-             "border-bottom-style":"solid"});
-
+  //$('#step').html('<b>Steps : </b>' + c + '/' + max )
+  //$('.sheetLine .step').css({"border-bottom-width":"0px"});
+  //$('.sheetLine .step:nth-child('+ (c+1) + ')' ).css({"border-bottom-color": "black", 
+  //           "border-bottom-width":"1px", 
+  //           "border-bottom-style":"solid"});
+  drawSheet(c)
   if (cursor == max){
       cursor = 0;
   }
@@ -661,23 +665,23 @@ function displayParams(){
     $('#' + c.name + '').click(function(){
       var self = $(this)
       if(self.is(':checked')){
-        c.muted = false
+        c.muted = false;
         if(c.name == 'Metronome')
           metronomeMute = false
-        $('.'+ c.name +'').removeClass('muted')
+        //$('.'+ c.name +'').removeClass('muted')
       }
       else{
         c.muted = true
         if(c.name == 'Metronome')
           metronomeMute = true
-        $('.'+ c.name +'').addClass('muted')
+        //$('.'+ c.name +'').addClass('muted')
       }
     })
   })
 }
 function drawTab(){
-  var result = ''
-  var emptyDiv = '<div class="step">' + empty + '</div>'
+  var result = '';
+  var emptyDiv = '<div class="step">' + empty + '</div>';
 
   var kickLine = new Array(max).fill(emptyDiv);
   var snareLine = new Array(max).fill(emptyDiv);
@@ -759,6 +763,247 @@ function drawTab(){
   }
   $('.sheetLine .step' ).css({"border-bottom-color": "black", "border-bottom-width":"0px", "border-bottom-style":"solid"});
 }
+
+function initCanvas(){
+  var w =0;
+  var h = 200;
+  var c = $('<canvas id="canvas" width="' + w + '" height="' + h + '"></canvas>');
+  $('#canvasDiv').append(c);
+  canvas = document.getElementById("canvas");
+  ctx = canvas.getContext("2d");
+}
+
+var hSpace = 20;
+var startSpace = 20;
+var wSpace = 20;
+var noteRadius = hSpace/3;
+var noteRadiusSmall = hSpace/4;
+var rideBias = 3;
+
+function drawSheet(c){
+  canvas.width = max*wSpace + startSpace;
+  canvas.height = startSpace+6*hSpace;
+  var length = max*wSpace + startSpace/2;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  //first line
+  ctx.strokeStyle = "white";
+  ctx.beginPath();
+  ctx.moveTo(0,startSpace);
+  ctx.lineTo(length,startSpace);
+  ctx.stroke();
+  ctx.closePath();
+
+  //horizontal lines
+  ctx.strokeStyle = "black";
+  ctx.beginPath();
+  for (var i = 1;i<6;i++){
+    ctx.moveTo(0,i*hSpace+startSpace);
+    ctx.lineTo(length,i*hSpace+startSpace);
+    ctx.stroke();
+  }
+  ctx.closePath();
+  
+  //vertical lines
+  for(var i = 0;i<=max;i++){
+    
+    if(i%resolution == 0){
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = "black"
+    }
+    else{
+      ctx.lineWidth = 0.5;
+      ctx.strokeStyle = "grey"
+    }
+    ctx.beginPath();
+    ctx.moveTo(startSpace - wSpace/2 + i*wSpace,hSpace+startSpace);
+    ctx.lineTo(startSpace - wSpace/2 + i*wSpace,5*hSpace+startSpace);
+    ctx.stroke();
+    ctx.closePath();
+  }
+  //cursor line
+  ctx.beginPath();
+  ctx.lineWidth = 2
+  ctx.moveTo(startSpace - wSpace/2 + (c-1)*wSpace,startSpace);
+  ctx.lineTo(startSpace - wSpace/2 + (c-1)*wSpace,6*hSpace+startSpace);
+  ctx.lineTo(startSpace - wSpace/2 + (c)*wSpace,6*hSpace+startSpace);
+  ctx.lineTo(startSpace - wSpace/2 + (c)*wSpace,startSpace);
+  ctx.lineTo(startSpace - wSpace/2 + (c-1)*wSpace,startSpace);
+  ctx.stroke();
+  ctx.closePath();
+  
+  //notes
+  commandList.forEach(function(co){
+    co.sequenceRepeated.forEach(function(note,i){
+      drawNote(ctx,note,i,co.limb.name,co);
+    })
+  })
+}
+
+
+function drawNote(ctx,note,i,limb,co){
+  if(co.muted)
+    return
+  if(note == 'snare' || note == 'kick' || note == 'highTom' || note == 'medTom' || note == 'floorTom'){
+    drawNoteHead(i,note,limb,isFla(limb,i))
+  }
+  if(note == 'clHiHat' || note == 'footHiHat' ){
+    drawSmallX(i,note,limb,isFla(limb,i));
+  }
+  if(note == 'opHiHat'){
+    drawSmallX(i,note,limb,isFla(limb,i));
+    drawEmptyCircle(i,note,limb,isFla(limb,i));
+  }
+  if(note == 'ride'){
+    drawBigX(i,note,limb,isFla(limb,i))
+  }
+}
+
+
+
+
+
+
+function drawFullCircle(i,note,limb,fla){
+  ctx.beginPath();
+  ctx.lineWidth = 1;
+  ctx.fillStyle = getColor(limb, fla);
+  ctx.strokeStyle = getColor(limb, fla);
+  ctx.arc(startSpace + i*wSpace,getHeight(note),noteRadius,0,2*Math.PI);
+  ctx.fill();
+  ctx.closePath();
+}
+function drawNoteHead(i,note,limb,fla){
+  var x = startSpace + i*wSpace;
+  var y = getHeight(note)
+  var sc = 0.25;
+  var ULx, ULy; // Upper Left corner
+  var LLx, LLy; // Lower Left corner
+  var URx, URy; // Upper Right corner
+  var LRx, LRy; // Lower Right corner
+  var CLx, CLy; // Center Left 
+  var CRx, CRy; // Center Right
+
+  ULx = x - 30*sc;
+  ULy = y - 28*sc;
+  URx = x + 30*sc;
+  URy = y - 38*sc;
+
+  LLx = x - 30*sc;
+  LLy = y + 38*sc;
+  LRx = x + 30*sc;
+  LRy = y + 28*sc;
+
+  CLx=(ULx+LLx)/2;  // Center Left point
+  CLy=(ULy+LLy)/2;
+  CRx=(URx+LRx)/2;  // Center Right point
+  CRy=(URy+LRy)/2;
+
+  
+
+  // Draw the curves and fill them in:
+  ctx.beginPath();
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = 'black';
+  ctx.fillStyle = getColor(limb,fla);
+  ctx.moveTo(CLx, CLy);
+  ctx.bezierCurveTo(ULx, ULy, URx, URy, CRx, CRy);
+  ctx.bezierCurveTo(LRx, LRy, LLx, LLy, CLx, CLy);
+  ctx.fill();
+  ctx.stroke();
+  ctx.closePath();
+}
+function drawEmptyCircle(i,note,limb,fla){
+  ctx.beginPath();
+  ctx.lineWidth = 1.5;
+  ctx.strokeStyle = getColor(limb, false);
+  ctx.arc(startSpace + i*wSpace,getHeight(note),noteRadius,0,2*Math.PI);
+  ctx.stroke();
+  ctx.closePath();
+}
+function drawBigX(i,note,limb,fla){
+  ctx.beginPath();
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = getColor(limb, false);
+  ctx.moveTo(startSpace + i*wSpace - noteRadius ,getHeight(note)-noteRadius);
+  ctx.lineTo(startSpace + i*wSpace + noteRadius ,getHeight(note)+noteRadius);
+  ctx.stroke();
+  if(fla){
+    ctx.closePath();
+    ctx.beginPath();
+    ctx.strokeStyle = getOppositeColor(limb);
+  }
+  ctx.moveTo(startSpace + i*wSpace - noteRadius ,getHeight(note)+noteRadius);
+  ctx.lineTo(startSpace + i*wSpace + noteRadius ,getHeight(note)-noteRadius);
+  ctx.stroke();
+  ctx.closePath();
+}
+function drawSmallX(i,note,limb,fla){
+  ctx.beginPath();
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = getColor(limb, false);
+  ctx.moveTo(startSpace + i*wSpace - noteRadiusSmall ,getHeight(note)-noteRadiusSmall);
+  ctx.lineTo(startSpace + i*wSpace + noteRadiusSmall ,getHeight(note)+noteRadiusSmall);
+  ctx.stroke();
+  if(fla){
+    ctx.closePath();
+    ctx.beginPath();
+    ctx.strokeStyle = getOppositeColor(limb);
+  }
+  ctx.moveTo(startSpace + i*wSpace - noteRadiusSmall ,getHeight(note)+noteRadiusSmall);
+  ctx.lineTo(startSpace + i*wSpace + noteRadiusSmall ,getHeight(note)-noteRadiusSmall);
+  ctx.stroke();
+  ctx.closePath();
+}
+function drawMiddleLine(i,note,limb,fla){
+  ctx.beginPath();
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = "black";
+  ctx.moveTo(startSpace + i*wSpace - noteRadius - rideBias ,getHeight(note));
+  ctx.lineTo(startSpace + i*wSpace + noteRadius + rideBias ,getHeight(note));
+  ctx.stroke();
+  ctx.closePath();
+}
+function isMuted(limb){
+  return limb.muted;
+}
+
+function drawStem(i,note,limb){
+  ctx.beginPath();
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = "black";
+  ctx.moveTo(startSpace + i*wSpace + noteRadius ,getHeight(note));
+  if(limb == "leftFoot" || limb == "rightFoot")
+    ctx.lineTo(startSpace + i*wSpace + noteRadius ,canvas.height);
+  else
+    ctx.lineTo(startSpace + i*wSpace + noteRadius ,0);
+  ctx.stroke();
+  ctx.closePath();
+}
+
+
+function getHeight(note){
+  if(note == 'kick')
+    return 4.5*hSpace + startSpace
+  else if (note == 'snare')
+    return 2.5*hSpace + startSpace
+  else if (note == 'clHiHat')
+    return 0.5*hSpace + startSpace
+  else if (note == 'opHiHat')
+    return 0.5*hSpace + startSpace
+  else if (note == 'footHiHat')
+    return 5.5*hSpace + startSpace
+  else if (note == 'highTom')
+    return 1.5*hSpace + startSpace
+  else if (note == 'medTom')
+    return 2*hSpace + startSpace
+  else if (note == 'floorTom')
+    return 3.5*hSpace + startSpace
+  else if (note == 'ride')
+    return 2*startSpace
+}
+
+
 
 
 
