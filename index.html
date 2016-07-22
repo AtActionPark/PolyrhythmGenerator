@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="content-type" name="apple-mobile-web-app-capable" content="text/html; charset=utf-8" />
-    <title>Test</title>
+    <meta http-equiv="content-type" name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Polyrhythm Generator</title>
+
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-     <!-- Latest compiled and minified JavaScript -->
+    <link rel="stylesheet" type="text/css" href="css/stylesheet.css">
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-    
     <script  src="js/helpers.js"></script>
     <script  src="js/script.js"></script>
-   
-    <link rel="stylesheet" type="text/css" href="css/stylesheet.css">
+    
   </head>
   <body>
     <div id="sidebar-black" class="sidebar-nav">
@@ -170,17 +170,17 @@
       </nav><!--/.navbar -->
     </div><!--/.sidebar-nav -->  
     
-  <main id="page-wrapper2">
-   <div id="wrapper"> 
-      <button id="generate" class="btn btn-default btn-lg" onClick="generateSong()">Generate</button> 
-      <div id='canvasDiv'></div>
-      <div id='controls'>
-        <div id='loop'></div>
-        <div id='pauseDiv'></div>
+    <main id="page-wrapper2">
+      <div id="wrapper"> 
+        <button id="generate" class="btn btn-default btn-lg" onClick="generateSong()">Generate</button> 
+        <div id='canvasDiv'></div>
+        <div id='controls'>
+          <div id='loop'></div>
+          <div id='pauseDiv'></div>
+        </div>
+        <div id='limbs'></div>
       </div>
-      <div id='limbs'></div>
-    </div>
-  </main>
+    </main>
   </body>
 </html>
 
