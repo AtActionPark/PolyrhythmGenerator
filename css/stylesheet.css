@@ -2,7 +2,6 @@
     margin:10px;
 }
 
-
 #params , #seedDiv, #forceDiv, #randomDiv{
     margin: 20px;
     border:1px solid white;
@@ -16,13 +15,7 @@
     width:100%;
     height:100%;
 }
-.title{
-    font-weight: bold;
-    font-size: 20px;
-    margin-left:20px;
-    margin-bottom:-15px;
-    margin-top: 20px
-}
+
 footer{
     margin-left: 20px;
 }
@@ -248,8 +241,6 @@ input[type=checkbox]:checked + label{
 #navbar-black.navbar-default .navbar-toggle:focus .icon-bar {
     background-color: #ffffff;
 }
-
-
 
 #navbar-black.navbar-default input[type=number] {
     margin-bottom:5px ;
