@@ -34,16 +34,16 @@ var maxTry = 500;
 var metronomeMute = true;
 
 //mixer volumes
-var snareGain = 0.7;
-var kickGain = 1;
+var snareGain = 0.6;
+var kickGain = 0.9;
 var clHiHatGain = 1;
-var opHiHatGain = 1;
-var footHiHatGain = 1;
-var highTomGain = 1;
-var medTomGain = 1;
-var floorTomGain = 1;
-var rideGain = 0.7;
-var metronomeGain = 0.7;
+var opHiHatGain = 0.9;
+var footHiHatGain = 0.9;
+var highTomGain = 0.9;
+var medTomGain = 0.9;
+var floorTomGain = 0.9;
+var rideGain = 0.6;
+var metronomeGain = 0.6;
 
 
 //SCHEDULER
@@ -110,6 +110,15 @@ $(document).ready(function(){
         $(this).children(".description").hide();
     });
   }
+  $(document).on('click', '.dropdown-menu', function (e) {
+    e.stopPropagation();
+  });
+  $('.dropdown').on({
+    "shown.bs.dropdown": function() { this.closable = false; },
+    "click":             function() { this.closable = true; },
+    "hide.bs.dropdown":  function() { return this.closable; }
+  });
+
 })
 
 function iosHandler(e){
@@ -161,7 +170,7 @@ function generateAndStart(){
 
   createDrumCommands();
   displayParams();
-  //drawTab();
+
   drawSheet();
 
   setInterval(scheduler, 20);
@@ -425,7 +434,7 @@ function pause(){
     context.suspend()
   else
     context.resume()
-  $('#pause').html(play? 'pause':'play')
+  $('#pause').html(play? 'Pause':'Play')
 }
 
 
@@ -642,11 +651,11 @@ function createDrumCommands(){
   var loops = Math.floor(max/resolution)
   var remainder = max%resolution
   var remain = remainder == 0 ? '' : (' and ' + remainder + ' steps')
-  $('#loop').html('</br><div>Loops in <b>' + loops + '</b> ' + resolution +  '/' + subdivision+ ' bars' + remain + '</div>' ) 
+  $('#loop').html('Loops in <b>' + loops + '</b> ' + resolution +  '/' + subdivision+ ' bars' + remain + ' ('+ max+ ' steps)' ) 
 }
 
 //DISPLAY
-//Display characteristics of the random song and add a mute command
+//Display characteristics of the random ong and add a mute command
 function displayParams(){
   $('#summary').empty()
   $('#pauseDiv').empty()
@@ -766,25 +775,33 @@ function drawTab(){
 
 function initCanvas(){
   var w =0;
-  var h = 200;
+  var h = 0;
   var c = $('<canvas id="canvas" width="' + w + '" height="' + h + '"></canvas>');
   $('#canvasDiv').append(c);
   canvas = document.getElementById("canvas");
   ctx = canvas.getContext("2d");
 }
 
+
+var startSpace = 80;
+var hStartSpace = 20;
 var hSpace = 20;
-var startSpace = 20;
 var wSpace = 20;
 var noteRadius = hSpace/3;
 var noteRadiusSmall = hSpace/4;
 var rideBias = 3;
 
 function drawSheet(c){
-  canvas.width = max*wSpace + startSpace;
-  canvas.height = startSpace+6*hSpace;
-  var length = max*wSpace + startSpace/2;
+  canvas.width = max*wSpace + startSpace - hSpace/2;
+  canvas.height = hStartSpace+6*hSpace;
+  var length = max*wSpace + startSpace;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = "black";
+  ctx.font = "bold 59px Arial";
+  var x = resolution>9? startSpace - 85 : startSpace-55
+  ctx.fillText(resolution, x, 80);
+  ctx.fillText(subdivision, startSpace-55, 120);
 
   //first line
   ctx.strokeStyle = "white";
@@ -798,8 +815,8 @@ function drawSheet(c){
   ctx.strokeStyle = "black";
   ctx.beginPath();
   for (var i = 1;i<6;i++){
-    ctx.moveTo(0,i*hSpace+startSpace);
-    ctx.lineTo(length,i*hSpace+startSpace);
+    ctx.moveTo(0,i*hSpace+hStartSpace);
+    ctx.lineTo(length,i*hSpace+hStartSpace);
     ctx.stroke();
   }
   ctx.closePath();
@@ -816,19 +833,19 @@ function drawSheet(c){
       ctx.strokeStyle = "grey"
     }
     ctx.beginPath();
-    ctx.moveTo(startSpace - wSpace/2 + i*wSpace,hSpace+startSpace);
-    ctx.lineTo(startSpace - wSpace/2 + i*wSpace,5*hSpace+startSpace);
+    ctx.moveTo(startSpace - wSpace/2 + i*wSpace,hSpace+hStartSpace);
+    ctx.lineTo(startSpace - wSpace/2 + i*wSpace,5*hSpace+hStartSpace);
     ctx.stroke();
     ctx.closePath();
   }
   //cursor line
   ctx.beginPath();
   ctx.lineWidth = 2
-  ctx.moveTo(startSpace - wSpace/2 + (c-1)*wSpace,startSpace);
-  ctx.lineTo(startSpace - wSpace/2 + (c-1)*wSpace,6*hSpace+startSpace);
-  ctx.lineTo(startSpace - wSpace/2 + (c)*wSpace,6*hSpace+startSpace);
-  ctx.lineTo(startSpace - wSpace/2 + (c)*wSpace,startSpace);
-  ctx.lineTo(startSpace - wSpace/2 + (c-1)*wSpace,startSpace);
+  ctx.moveTo(startSpace - wSpace/2 + (c-1)*wSpace,hStartSpace);
+  ctx.lineTo(startSpace - wSpace/2 + (c-1)*wSpace,6*hSpace+hStartSpace);
+  ctx.lineTo(startSpace - wSpace/2 + (c)*wSpace,6*hSpace+hStartSpace);
+  ctx.lineTo(startSpace - wSpace/2 + (c)*wSpace,hStartSpace);
+  ctx.lineTo(startSpace - wSpace/2 + (c-1)*wSpace,hStartSpace);
   ctx.stroke();
   ctx.closePath();
   
@@ -839,8 +856,6 @@ function drawSheet(c){
     })
   })
 }
-
-
 function drawNote(ctx,note,i,limb,co){
   if(co.muted)
     return
@@ -859,20 +874,6 @@ function drawNote(ctx,note,i,limb,co){
   }
 }
 
-
-
-
-
-
-function drawFullCircle(i,note,limb,fla){
-  ctx.beginPath();
-  ctx.lineWidth = 1;
-  ctx.fillStyle = getColor(limb, fla);
-  ctx.strokeStyle = getColor(limb, fla);
-  ctx.arc(startSpace + i*wSpace,getHeight(note),noteRadius,0,2*Math.PI);
-  ctx.fill();
-  ctx.closePath();
-}
 function drawNoteHead(i,note,limb,fla){
   var x = startSpace + i*wSpace;
   var y = getHeight(note)
@@ -903,7 +904,7 @@ function drawNoteHead(i,note,limb,fla){
 
   // Draw the curves and fill them in:
   ctx.beginPath();
-  ctx.lineWidth = 1;
+  ctx.lineWidth = 1.5;
   ctx.strokeStyle = 'black';
   ctx.fillStyle = getColor(limb,fla);
   ctx.moveTo(CLx, CLy);
@@ -968,40 +969,7 @@ function isMuted(limb){
   return limb.muted;
 }
 
-function drawStem(i,note,limb){
-  ctx.beginPath();
-  ctx.lineWidth = 1;
-  ctx.strokeStyle = "black";
-  ctx.moveTo(startSpace + i*wSpace + noteRadius ,getHeight(note));
-  if(limb == "leftFoot" || limb == "rightFoot")
-    ctx.lineTo(startSpace + i*wSpace + noteRadius ,canvas.height);
-  else
-    ctx.lineTo(startSpace + i*wSpace + noteRadius ,0);
-  ctx.stroke();
-  ctx.closePath();
-}
 
-
-function getHeight(note){
-  if(note == 'kick')
-    return 4.5*hSpace + startSpace
-  else if (note == 'snare')
-    return 2.5*hSpace + startSpace
-  else if (note == 'clHiHat')
-    return 0.5*hSpace + startSpace
-  else if (note == 'opHiHat')
-    return 0.5*hSpace + startSpace
-  else if (note == 'footHiHat')
-    return 5.5*hSpace + startSpace
-  else if (note == 'highTom')
-    return 1.5*hSpace + startSpace
-  else if (note == 'medTom')
-    return 2*hSpace + startSpace
-  else if (note == 'floorTom')
-    return 3.5*hSpace + startSpace
-  else if (note == 'ride')
-    return 2*startSpace
-}
 
 
 

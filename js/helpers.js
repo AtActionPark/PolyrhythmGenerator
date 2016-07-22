@@ -146,7 +146,7 @@ function getColor(limb,fla){
     return "purple";
   }
   if(limb == 'rightFoot')
-    return "black"
+    return '#333'
   else if (limb == 'leftFoot')
     return "gray"
   else if (limb == 'rightHand')
@@ -160,6 +160,27 @@ function getOppositeColor(limb){
   else if (limb == 'leftHand')
     return "red"
 }
+function getHeight(note){
+  if(note == 'kick')
+    return 4.5*hSpace + hStartSpace
+  else if (note == 'snare')
+    return 2.5*hSpace + hStartSpace
+  else if (note == 'clHiHat')
+    return 0.5*hSpace + hStartSpace
+  else if (note == 'opHiHat')
+    return 0.5*hSpace + hStartSpace
+  else if (note == 'footHiHat')
+    return 5.5*hSpace + hStartSpace
+  else if (note == 'highTom')
+    return 1.5*hSpace + hStartSpace
+  else if (note == 'medTom')
+    return 2*hSpace + hStartSpace
+  else if (note == 'floorTom')
+    return 3.5*hSpace + hStartSpace
+  else if (note == 'ride')
+    return hSpace + hStartSpace
+}
+
 function isFla(limb,c){
   return limb == 'rightHand' && (commandList[1].sequenceRepeated[c] == commandList[2].sequenceRepeated[c])
 }

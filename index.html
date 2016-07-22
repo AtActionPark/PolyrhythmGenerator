@@ -3,143 +3,186 @@
   <head>
     <meta http-equiv="content-type" name="apple-mobile-web-app-capable" content="text/html; charset=utf-8" />
     <title>Test</title>
-
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+     <!-- Latest compiled and minified JavaScript -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    
     <script  src="js/helpers.js"></script>
     <script  src="js/script.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+   
     <link rel="stylesheet" type="text/css" href="css/stylesheet.css">
   </head>
   <body>
-    <div id="wrapper">
-      <div id="sidebar-wrapper">
-        <p class="title">GENERATE</p>
-        <div id="params">
-          Tempo: <input id='tempo' class="bg" value = '60' type=number  min=1 onchange="changeTempo()"/></br>
-          Time Sig: 
-          <select id="resolution" >
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4" selected="selected">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-            <option value="8">8</option>
-            <option value="9">9</option>
-            <option value="10">10</option>
-            <option value="11">11</option>
-          </select> / 
-          <select id="subdivision">
-            <option value="2">2</option>
-            <option value="4" selected="selected">4</option>
-            <option value="8">8</option>
-          </select></br>
-          <div class="tiptext">?<div class="description">Maximum desired length of the resulting pattern. Depending on the parameters chosen, this value can not always be possible. It will be replaced with the absolute minimum in that case.</div></div>Max Length: <input id='maxLength'  class="bg" value = '72' type=number min=1 max=120 /></br>
-          
-          <div class="tiptext">?<div class="description">Density codes for the number of notes in each sequences. A high density will produce very dense patterns</div></div>Density:
-          <select id="density">
-            <option value="0">0</option>
-            <option value="1">1</option>
-            <option value="2" selected="selected">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-          </select></br>
-          <div class="tiptext">?<div class="description">Desired number of different rhythms</div></div>Nb. of Rhythms:
-          <select id="nbOfRhythms">
-            <option value="1">1</option>
-            <option value="2" selected="selected">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-          </select>
-
-          <div id="leftFootDiv">Left foot : <input id="leftFoot"  type="checkbox" checked></div>
-          <div id="orchestrateDiv">Orchestrate : <input id="orchestrate"  type="checkbox" checked></div>
-          <div id="euclideanDiv"><div class="tiptext">?<div class="description">If ticked, will try to produce a pattern as evenly distributed as possible, depending on the bar length and the density. If not, the distribution will be random. </div></div>Euclidian Rhythm : <input id="euclidean"  type="checkbox"></div>
-          <button id="generate" class="btn btn-default" onClick="generateSong()">Generate</button>
-        </div>
-
-        <p class="title">ADVANCED</p>
-        <div id="forceDiv">
-        <div class="tiptext">?<div class="description">If checked, length size for each limb must be specified. The max length parameter will then be recalculated</div></div><b>Chose Length  </b><input id="forceLength" type="checkbox" onchange="changeForceLength()"></br></br>
-          Left Hand: 
-          <select  id="forceLeftHand" disabled onchange="changeForce()">
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4" selected="selected">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-            <option value="8">8</option>
-            <option value="9">9</option>
-            <option value="10">10</option>
-            <option value="11">11</option>
-          </select></br>
-          Right Hand: 
-          <select id="forceRightHand" disabled onchange="changeForce()">
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4" selected="selected">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-            <option value="8">8</option>
-            <option value="9">9</option>
-            <option value="10">10</option>
-            <option value="11">11</option>
-          </select></br>
-          Left Foot: 
-          <select id="forceLeftFoot" disabled onchange="changeForce()">
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4" selected="selected">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-            <option value="8">8</option>
-            <option value="9">9</option>
-            <option value="10">10</option>
-            <option value="11">11</option>
-          </select></br>
-          Right Foot: 
-          <select id="forceRightFoot" disabled onchange="changeForce()">
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4" selected="selected">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-            <option value="8">8</option>
-            <option value="9">9</option>
-            <option value="10">10</option>
-            <option value="11">11</option>
-          </select></br></br>
-          <div class="explain">Changing those parameters will disable some parameters</div>
-        </div>
-        
-        <p class="title">SEED</p>
-        <div id="seedDiv">
-          <b>Current seed:</b> <div id="seed">-</div>
-          </br>
-   
-          <input id='seedInput' type=numberBox size="22" min=1 /></br>
-          <button id="loadSeed" class="btn btn-default" onClick="readSeed()">Load</button>
-          <button id="shareSeed" class="btn btn-default" onClick="shareSeed()">Get Seed url</button></br>
-        </div>
-        <p class="title">Randomize</p>
-        <div id="randomDiv">
-          <button id="random" class="btn btn-default" onClick="randomize()">Random</button></br>
-        </div>
-        
-        <footer><a href="http://www.github.com/atactionpark/polyrhythmGenDev">Source on Github</a></footer>
+    <div id="sidebar-black" class="sidebar-nav">
+      <nav id="navbar-black" class="navbar navbar-default" role="navigation">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <span class="visible-xs"><div class="navbar-brand" href="/">RhythmGen</div></span>
       </div>
-      <div id="page-content-wrapper">
-        <div id='canvasDiv'></div>
-        <!--<div id='sheet'></div>-->
+      
+      <div class="navbar-collapse collapse sidebar-navbar-collapse">
+        <ul class="nav navbar-nav">
+          <li class="hidden-xs"><div class="navbar-brand" href="/">RhythmGen</div></li>
+
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-cog"></i> Options <b class="caret"></b></a>
+            <ul class="dropdown-menu"> 
+              <div id="params">
+                Tempo: <input id='tempo' class="bg" value = '60' type=number  min=1 onchange="changeTempo()"/></br>
+                Time Sig: 
+                <select id="resolution" >
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4" selected="selected">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                </select> / 
+                <select id="subdivision">
+                  <option value="2">2</option>
+                  <option value="4" selected="selected">4</option>
+                  <option value="8">8</option>
+                </select></br>
+                <div class="tiptext">?<div class="description">Maximum desired length of the resulting pattern. Depending on the parameters chosen, this value can not always be possible. It will be replaced with the absolute minimum in that case.</div></div>Max Length: <input id='maxLength'  class="bg" value = '72' type=number min=1 max=120 /></br>
+                
+                <div class="tiptext">?<div class="description">Density codes for the number of notes in each sequences. A high density will produce very dense patterns</div></div>Density:
+                <select id="density">
+                  <option value="0">0</option>
+                  <option value="1">1</option>
+                  <option value="2" selected="selected">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                </select></br>
+                <div class="tiptext">?<div class="description">Desired number of different rhythms</div></div>Nb. of Rhythms:
+                <select id="nbOfRhythms">
+                  <option value="1">1</option>
+                  <option value="2" selected="selected">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                </select>
+
+                <div id="leftFootDiv">Left foot : <input id="leftFoot"  type="checkbox" checked></div>
+                <div id="orchestrateDiv">Orchestrate : <input id="orchestrate"  type="checkbox" checked></div>
+                
+              </div>
+            </ul>
+          </li>
+                 
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-wrench"></i> Advanced <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <div id="forceDiv">
+              <div class="tiptext">?<div class="description">If checked, length size for each limb must be specified. The max length parameter will then be recalculated</div></div><b>Force Length  </b><input id="forceLength" type="checkbox" onchange="changeForceLength()"></br></br>
+              Left Hand: 
+              <select  id="forceLeftHand" disabled onchange="changeForce()">
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4" selected="selected">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+              </select></br>
+              Right Hand: 
+              <select id="forceRightHand" disabled onchange="changeForce()">
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4" selected="selected">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+              </select></br>
+              Left Foot: 
+              <select id="forceLeftFoot" disabled onchange="changeForce()">
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4" selected="selected">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+              </select></br>
+              Right Foot: 
+              <select id="forceRightFoot" disabled onchange="changeForce()">
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4" selected="selected">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+              </select></br></br>
+              <div id="euclideanDiv"><div class="tiptext">?<div class="description">If ticked, will try to produce a pattern as evenly distributed as possible, depending on the bar length and the density. If not, the distribution will be random. </div></div>Euclidian Rhythm : <input id="euclidean"  type="checkbox"></div>
+              </div>
+              
+            </ul>
+          </li>
+               
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-qrcode"></i> Seed <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <div id="seedDiv">
+              <b>Current seed:</b> <div id="seed">-</div>
+              </br>
+              <input id='seedInput' type=numberBox size="22" min=1 /></br>
+              <button id="loadSeed" class="btn btn-default" onClick="readSeed()">Load</button>
+              <button id="shareSeed" class="btn btn-default" onClick="shareSeed()">Get Seed url</button></br>
+            </div>           
+            </ul>
+          </li>
+
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-record"></i> Random <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <div id="randomDiv">
+                <button id="random" class="btn btn-default" onClick="randomize()">Randomize All</button></br>
+              </div>
+            </div>           
+            </ul>
+          </li>
+        
+        </ul>
+      </div><!--/.nav-collapse -->
+        
+      </nav><!--/.navbar -->
+    </div><!--/.sidebar-nav -->  
+    
+  <main id="page-wrapper2">
+   <div id="wrapper"> 
+      <button id="generate" class="btn btn-default btn-lg" onClick="generateSong()">Generate</button> 
+      <div id='canvasDiv'></div>
+      <div id='controls'>
         <div id='loop'></div>
-        <div id='summary'></div>
         <div id='pauseDiv'></div>
-        <div id='limbs'></div>
       </div>
+      <div id='limbs'></div>
     </div>
+  </main>
   </body>
 </html>
+
+
+
