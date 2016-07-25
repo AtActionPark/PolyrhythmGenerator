@@ -394,7 +394,7 @@ function loadSeed(input){
 }
 function shareSeed(){
   //
-  window.history.pushState('seed', 'seed', '/AtActionPark/polyrhythmGenDev/master/index.html?'+generateSeed());
+  window.history.pushState('seed', 'seed', '/PolyrhythmGenerator?'+generateSeed());
 }
 
 
