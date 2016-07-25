@@ -13,7 +13,7 @@ Parameters are:
 
 And a way to force specific length for each limb. If used, the Number of Ryhthm param will not be used anymore
 
-[html preview](http://rawgit.com/AtActionPark/polyrhythmGenerator/master/index.html)
+[html preview](https://atactionpark.github.io/PolyrhythmGenerator/)
 
 
 
