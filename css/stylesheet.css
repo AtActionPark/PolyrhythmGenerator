@@ -267,5 +267,11 @@ input[type=checkbox]:checked + label{
     margin-bottom:100px;
 }
 
+#qunit{
+    position:fixed;
+    bottom:0px;
+    z-index: 200;
+}
+
 
 
