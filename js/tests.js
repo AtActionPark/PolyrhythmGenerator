@@ -1,6 +1,6 @@
 //lets generate a random song, create a seed, load it, and compare to the original 
 QUnit.config.autostart = false;
-var unitTest = false
+let unitTest = false
 
 function runTest(){
 	if(!unitTest)
@@ -14,26 +14,26 @@ function startTest(){
   	}
   	unitTest = true;
 
-	var s;
+	let s;
 	QUnit.test( "init", function( assert ) {
 		generateSong()
-		play = false
+		context.suspend()
 		s = generateSeed()
 		assert.equal( 1 ,1, "init" );
 
 		setTimeout(QUnit.test( "Seeding Sequence", function( assert ) {
-					var beforeSequence1 = commandList[1].sequenceRepeated;
-					var beforeSequence2 = commandList[2].sequenceRepeated;
-					var beforeSequence3 = commandList[3].sequenceRepeated;
-					var beforeSequence4 = commandList[4].sequenceRepeated;
+					const beforeSequence1 = commandList[1].sequenceRepeated;
+					const beforeSequence2 = commandList[2].sequenceRepeated;
+					const beforeSequence3 = commandList[3].sequenceRepeated;
+					const beforeSequence4 = commandList[4].sequenceRepeated;
 
 					loadSeed(s)
 					play = false
 
-					var afterSequence1 = commandList[1].sequenceRepeated;
-					var afterSequence2 = commandList[2].sequenceRepeated;
-					var afterSequence3 = commandList[3].sequenceRepeated;
-					var afterSequence4 = commandList[4].sequenceRepeated;
+					const afterSequence1 = commandList[1].sequenceRepeated;
+					const afterSequence2 = commandList[2].sequenceRepeated;
+					const afterSequence3 = commandList[3].sequenceRepeated;
+					const afterSequence4 = commandList[4].sequenceRepeated;
 
 					assert.deepEqual( afterSequence1 ,beforeSequence1, "Same  sequence 1" );
 					assert.deepEqual( afterSequence2 ,beforeSequence2, "Same  sequence 2" );

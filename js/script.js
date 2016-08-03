@@ -1,104 +1,105 @@
 "use strict";
+
 // USER PARAMS
-var tempo = 60.0;
+let tempo = 60.0;
 //nb of steps per bar
-var resolution = 4;
+let resolution = 4;
 //duration of notes
-var subdivision = 4;
+let subdivision = 4;
 //proba of having a beat on each step
-var densityCategory = 2;
+let densityCategory = 2;
 //limit for the result length in steps
-var maxLength = 64;
-var useLeftFoot = true;
-var orchestrate = true;
-var euclideanRhythm = false;
-var nbOfRhythms = 1;
+let maxLength = 64;
+let useLeftFoot = true;
+let orchestrate = true;
+let euclideanRhythm = false;
+let nbOfRhythms = 1;
 
 //FIXED PARAMS
 // sequences length
-var minStep = 2;
-var maxStep = 11;
-var flaTime = 0.04;
-var possibleSubdivisions = [2,4,8];
+const minStep = 2;
+const maxStep = 11;
+const flaTime = 0.04;
+const possibleSubdivisions = [2,4,8];
 
 
 //limb bias - some limbs will play a higher average nb of notes
-var lHandDensityFactor = 1;
-var rHandDensityFactor = 1;
-var lFootDensityFactor = 0.7;
-var rFootDensityFactor = 0.8;
+const lHandDensityFactor = 1;
+const rHandDensityFactor = 1;
+const lFootDensityFactor = 0.7;
+const rFootDensityFactor = 0.8;
 
-var seedPrecision = 5;
-var maxTry = 500;
-var metronomeMute = true;
+const seedPrecision = 5;
+const maxTry = 500;
+let metronomeMute = true;
 
 //mixer volumes
-var snareGain = 0.6;
-var kickGain = 0.9;
-var clHiHatGain = 1;
-var opHiHatGain = 0.9;
-var footHiHatGain = 0.9;
-var highTomGain = 0.9;
-var medTomGain = 0.9;
-var floorTomGain = 0.9;
-var rideGain = 0.6;
-var metronomeGain = 0.6;
+const snareGain = 0.6;
+const kickGain = 0.9;
+const clHiHatGain = 1;
+const opHiHatGain = 0.9;
+const footHiHatGain = 0.9;
+const highTomGain = 0.9;
+const medTomGain = 0.9;
+const floorTomGain = 0.9;
+const rideGain = 0.6;
+const metronomeGain = 0.6;
 
 
 //SCHEDULER
-var lookahead = 25.0;
-var scheduleAheadTime = 0.1;
-var schedulerTimer;
-var nextNoteTime = 0.0;
+const lookahead = 25.0;
+const scheduleAheadTime = 0.1;
+let schedulerTimer;
+let nextNoteTime = 0.0;
 
 //stuff
-var commandList = [];
-var cursor = 0;
-var max = 1;
-var play = true;
-var context;
-var bufferLoader;
-var empty = "-";
-var generationSeed;
-var seed;
-var density;
+let commandList = [];
+let cursor = 0;
+let max = 1;
+let play = true;
+let context;
+let bufferLoader;
+const empty = "-";
+let generationSeed;
+let seed;
+let density;
 
-var lHandLength = 0;
-var rHandLength =0;
-var lFootLength = 0;
-var rFootLength = 0;
+let lHandLength = 0;
+let rHandLength =0;
+let lFootLength = 0;
+let rFootLength = 0;
 
-var forceLength = false;
-var forceLeftHand = 0;
-var forceRightHand = 0;
-var forceLeftFoot = 0;
-var forceRightFoot = 0;
+let forceLength = false;
+let forceLeftHand = 0;
+let forceRightHand = 0;
+let forceLeftFoot = 0;
+let forceRightFoot = 0;
 
-var kickSound = null;
-var snareSound = null;
-var clHiHatSound = null;
-var opHiHatSound = null;
-var metronomeSound = null;
-var rideSound = null;
-var highTomSound = null;
-var medTomSound = null;
-var floorTomSound = null;
+let kickSound = null;
+let snareSound = null;
+let clHiHatSound = null;
+let opHiHatSound = null;
+let metronomeSound = null;
+let rideSound = null;
+let highTomSound = null;
+let medTomSound = null;
+let floorTomSound = null;
 
-var locked = true;
+let locked = true;
 
 //canvas stuff
-var canvas;
-var ctx;
-var startSpace = 80;
-var hStartSpace = 20;
-var hSpace = 20;
-var wSpace = 20;
-var noteRadius = hSpace/3;
-var noteRadiusSmall = hSpace/4;
-var rideBias = 3;
+let canvas;
+let ctx;
+const startSpace = 80;
+const hStartSpace = 20;
+const hSpace = 20;
+const wSpace = 20;
+const noteRadius = hSpace/3;
+const noteRadiusSmall = hSpace/4;
+const rideBias = 3;
 
-$(document).ready(function(){
-  var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+$(document).ready(() =>{
+  const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
   context = new AudioContext();
@@ -134,8 +135,8 @@ function iosHandler(e){
     alert("unlocked");
     locked = false;
     // create empty buffer
-    var buffer = context.createBuffer(1, 1, 22050);
-    var source = context.createBufferSource();
+    const buffer = context.createBuffer(1, 1, 22050);
+    const source = context.createBufferSource();
     source.buffer = buffer;
     source.connect(context.destination);
     source.noteOn(0);
@@ -167,7 +168,7 @@ function generateAndStart(){
   }
   // else, give the generator a few tries to find it
   else{
-    var count = 0;
+    let count = 0;
     do {
       generateLengths();
       count++;
@@ -214,25 +215,15 @@ function randomize(){
   generationSeed = generationSeed.toFixed(seedPrecision);
   seed = generationSeed;
 
-
-  var t = getRandomInt(30,120);
-  $("#tempo").val(t);
-  var r = getRandomInt(2,9);
-  $("#resolution").val(r);
-  var sub = pickRandomArray(possibleSubdivisions);
-  $("#subdivision").val(sub);
-  var mxl = getRandomInt(20,80);
-  $("#maxLength").val(mxl);
-  var d = getRandomInt(0,4);
-  $("#density").val(d);
-  var nbr = getRandomInt(2,4);
-  $("#nbOfRhythms").val(nbr);
-  var lf = getRandomInt(0,1);
-  $("#leftFoot").prop("checked", lf);
-  var or = getRandomInt(0,1);
-  $("#orchestrate").prop("checked", or);
-  var eu = getRandomInt(0,1);
-  $("#euclidean").prop("checked", eu);
+  $("#tempo").val(getRandomInt(30,120));
+  $("#resolution").val(getRandomInt(2,9));
+  $("#subdivision").val(pickRandomArray(possibleSubdivisions));
+  $("#maxLength").val(getRandomInt(20,80));
+  $("#density").val(getRandomInt(0,4));
+  $("#nbOfRhythms").val(getRandomInt(2,4));
+  $("#leftFoot").prop("checked", getRandomInt(0,1));
+  $("#orchestrate").prop("checked", getRandomInt(0,1));
+  $("#euclidean").prop("checked", getRandomInt(0,1));
   generateSong();
 
 }
@@ -260,10 +251,9 @@ function changeForce(){
   forceRightFoot = parseInt($("#forceRightFoot").val());
 }
 function readURL(){
-  var url = window.location.href ;
-  var captured;
+  const url = window.location.href ;
   if(url.includes("?")){
-    captured = /\?([^&]+)/.exec(url)[1]; 
+    let captured = /\?([^&]+)/.exec(url)[1]; 
     loadSeed(captured);
   }
 }
@@ -279,7 +269,7 @@ function reset(){
 //compute the minimum length with params and compare with user expectation
 function checkMaxLength(){
   if(!forceLength){
-    var mini = minPossibleLength(resolution,nbOfRhythms);
+    const mini = minPossibleLength(resolution,nbOfRhythms);
     if(mini>maxLength){
       replaceMaxLength(mini);
     }
@@ -295,7 +285,7 @@ function replaceMaxLength(mini){
 //SEED
 //Concatenates all needed params for the seed
 function generateSeed(){
-  var subString = convertBase(resolution.toString(),10,12) 
+  const subString = convertBase(resolution.toString(),10,12) 
     + ""+ parseInt(subdivision) 
     + ""  + parseInt(densityCategory) 
     + ""+ parseInt(nbOfRhythms) 
@@ -303,22 +293,22 @@ function generateSeed(){
     + (orchestrate?1:0) + "" 
     + (euclideanRhythm?1:0);
 
-  var s = parseInt(tempo) + "-" 
+  const s = parseInt(tempo) + "-" 
     + parseInt(maxLength) + "-" 
     + subString  ;
 
-  var convertedParams = convertBase(s,13,64);
-  var convertedSeed = convertBase(Math.round(parseFloat(generationSeed,10) * Math.pow(10,seedPrecision)).toString(),10,64);
+  const convertedParams = convertBase(s,13,64);
+  const convertedSeed = convertBase(Math.round(parseFloat(generationSeed,10) * Math.pow(10,seedPrecision)).toString(),10,64);
 
-  var result = convertedParams + "@" +  convertedSeed;
+  const result = convertedParams + "@" +  convertedSeed;
 
   if(forceLength){
-    var forceString = "";
+    let forceString = "";
     forceString+= convertBase(forceLeftHand.toString(),10,12);
     forceString+= "" + convertBase(forceRightHand.toString(),10,12);
     forceString+= "" + convertBase(forceLeftFoot.toString(),10,12);
     forceString+= "" + convertBase(forceRightFoot.toString(),10,12);
-    var convertedForceString = convertBase(forceString,12,64);
+    const convertedForceString = convertBase(forceString,12,64);
     result+= "@"+ convertedForceString;
   }
   return result;
@@ -326,25 +316,26 @@ function generateSeed(){
 
 //Reads the seed value input 
 function readSeed(){
-  var input = $("#seedInput").val().trim();
+  const input = $("#seedInput").val().trim();
   loadSeed(input);
 }
 //generates a song according to the seed
 function loadSeed(input){
-  var s =input.split(/@/g);
-  var convertedParams = s[0];
-  var convertedSeed = s[1];
-  var convertedForce = s[2];
+  const s =input.split(/@/g);
+  const convertedParams = s[0];
+  const convertedSeed = s[1];
+  const convertedForce = s[2];
 
-  var reconvertedParams = convertBase(convertedParams,64,13);
+  const reconvertedParams = convertBase(convertedParams,64,13);
 
-  var reconvertedSeed = parseFloat(convertBase(convertedSeed,64,10),10).toFixed(seedPrecision);
+  const reconvertedSeed = parseFloat(convertBase(convertedSeed,64,10),10).toFixed(seedPrecision);
   seed = reconvertedSeed/Math.pow(10,seedPrecision) || 1;
 
+  let reconvertedForce;
   if(convertedForce){
-    var reconvertedForce = convertBase(convertedForce,64,12);
+    reconvertedForce = convertBase(convertedForce,64,12);
   }
-  var params = reconvertedParams.split(/-/g);
+  const params = reconvertedParams.split(/-/g);
 
   tempo = parseInt(params[0]) || 60;
   $("#tempo").val(tempo);
@@ -352,7 +343,7 @@ function loadSeed(input){
   maxLength = parseInt(params[1]) || 32;
   $("#maxLength").val(maxLength);
 
-  var paramsSubString = params[2].toString();
+  let paramsSubString = params[2].toString();
   paramsSubString = paramsSubString.split("");
 
 
@@ -386,7 +377,7 @@ function loadSeed(input){
   forceLeftFoot = 0;
   forceRightFoot = 0;
   if(reconvertedForce!= null){
-    var force = reconvertedForce.split("");
+    const force = reconvertedForce.split("");
     forceLeftHand = parseInt(convertBase(force[0],12,10)) || 0;
     forceRightHand = parseInt(convertBase(force[1],12,10)) || 0;
     forceLeftFoot = parseInt(convertBase(force[2],12,10)) || 0;
@@ -422,9 +413,9 @@ function shareSeed(){
 //SCHEDULER
 //Advances the cursor for reading sequences and update display
 function nextNote(){
-  var secondsPerBeat = 60.0 / tempo *resolution/subdivision;
+  const secondsPerBeat = 60.0 / tempo *resolution/subdivision;
   nextNoteTime +=secondsPerBeat/resolution;
-  var c = cursor+1;
+  const c = cursor+1;
   cursor++;
 
   drawSheet(c);
@@ -470,7 +461,7 @@ Limb.prototype.play = function(instr,c){
   this.source.buffer = getBuffer(instr);
   this.gain.gain.value = getGain(instr);
 
-  var time = 0;
+  let time = 0;
   if(isFla(this.name,c)){
     time = context.currentTime + flaTime;
   }
@@ -493,17 +484,17 @@ Command.prototype.play = function(c){
     return;
   }
 
-  var limb = this.limb;
+  let limb = this.limb;
   if(this.sequenceRepeated[c] != empty ){
     limb.play(this.sequenceRepeated[c],c);
   }
 };
 //Returns basic info/buttons for the sequence
 Command.prototype.display = function(){
-  var mute = "<input id=" + this.name + " type=checkbox><label></label> ";
-  var length = " : " + this.sequence.length  + " steps";
-  var result = "";
-  for(var i = 0;i<this.sequence.length;i++){
+  const mute = "<input id=" + this.name + " type=checkbox><label></label> ";
+  const length = " : " + this.sequence.length  + " steps";
+  let result = "";
+  for(let i = 0;i<this.sequence.length;i++){
     result +=  this.sequence[i] + " ";
   }
 
@@ -517,13 +508,13 @@ Command.prototype.display = function(){
 //generates the length of the sequence for each limb. Depending on the nbOfRhythms, all sequences' lengths could be the same or different
 function generateLengths(){
   //start by making sure that the resolution is in the array of possible lengths
-  var lengths = [resolution];
+  let lengths = [resolution];
 
   //continue populationg the array until we have 3 additional random values
   while(lengths.length<4){
-    var randomnumber=getRandomInt(minStep,maxStep);
-    var found=false;
-    for(var i=0;i<lengths.length;i++){
+    const randomnumber=getRandomInt(minStep,maxStep);
+    let found=false;
+    for(let i=0;i<lengths.length;i++){
       if(lengths[i]==randomnumber){
         found=true;break;
       }
@@ -576,8 +567,8 @@ function generateLengths(){
   max = getLoopLength(lengths);
 }
 function getLoopLength(arr){
-  var result = 1;
-  for(var i = 0;i<arr.length;i++){
+  let result = 1;
+  for(let i = 0;i<arr.length;i++){
     result = lcm(result,arr[i]);
   }
   return result;
@@ -585,9 +576,9 @@ function getLoopLength(arr){
 //Generates sequence of notes based on random params and precalculated length
 function randomSequence(limb){
   if(euclideanRhythm){
-    var pulses = parseInt(getRandomInt(minStep,getLength(limb.name)*1.0*getDensity(limb.name)/100));
-    var pattern = bjorklund(getLength(limb.name),pulses);
-    for(var i = 0;i<pattern.length;i++){
+    const pulses = parseInt(getRandomInt(minStep,getLength(limb.name)*1.0*getDensity(limb.name)/100));
+    let pattern = bjorklund(getLength(limb.name),pulses);
+    for(let i = 0;i<pattern.length;i++){
       if(pattern[i] == 1){
         pattern[i] = pickRandomArray(limb.instruments);
       }
@@ -600,11 +591,12 @@ function randomSequence(limb){
   }
   
 
-  var seq = [];
-  var stepsAdded = 0;
+  let seq = [];
+  let stepsAdded = 0;
+  let instrument;
   //Initialize the sequence with all empty steps
-  for(var i = 0;i<getLength(limb.name);i++){
-    var instrument = pickRandomArray(limb.instruments);
+  for(let i = 0;i<getLength(limb.name);i++){
+    instrument = pickRandomArray(limb.instruments);
     seq[i] = empty;
     //randomly add notes
     if(getRandomFloat(0,1)*100<getDensity(limb.name)){
@@ -627,43 +619,43 @@ function randomSequence(limb){
 function createDrumCommands(){
   commandList = [];
 
-  var metronome = new Limb("metronome");
-  var metronomeSequence = ["metronome"];
-  var metronomeCommand = new Command(metronome,metronomeSequence,"Metronome");
+  const metronome = new Limb("metronome");
+  const metronomeSequence = ["metronome"];
+  const metronomeCommand = new Command(metronome,metronomeSequence,"Metronome");
   metronomeCommand.muted = metronomeMute;
   commandList.push(metronomeCommand);
 
-  var leftHand = new Limb("leftHand");
-  var leftHandSeq = randomSequence(leftHand);
-  var leftHandCommand = new Command(leftHand,leftHandSeq,"LeftHand");
+  const leftHand = new Limb("leftHand");
+  const leftHandSeq = randomSequence(leftHand);
+  const leftHandCommand = new Command(leftHand,leftHandSeq,"LeftHand");
   commandList.push(leftHandCommand);
 
-  var rightHand = new Limb("rightHand");
-  var rightHandSeq = randomSequence(rightHand);
-  var rightHandCommand = new Command(rightHand,rightHandSeq,"RightHand");
+  const rightHand = new Limb("rightHand");
+  const rightHandSeq = randomSequence(rightHand);
+  const rightHandCommand = new Command(rightHand,rightHandSeq,"RightHand");
   commandList.push(rightHandCommand);
 
-  var leftFoot = new Limb("leftFoot");
-  var leftFootSequence = randomSequence(leftFoot);
-  var leftFootCommand = new Command(leftFoot,leftFootSequence,"LeftFoot");
+  const leftFoot = new Limb("leftFoot");
+  const leftFootSequence = randomSequence(leftFoot);
+  const leftFootCommand = new Command(leftFoot,leftFootSequence,"LeftFoot");
   if(useLeftFoot){
     commandList.push(leftFootCommand);
   }
 
-  var rightFoot = new Limb("rightFoot");
-  var rightFootSequence = randomSequence(rightFoot);
-  var rightFootCommand = new Command(rightFoot,rightFootSequence,"RightFoot");
+  const rightFoot = new Limb("rightFoot");
+  const rightFootSequence = randomSequence(rightFoot);
+  const rightFootCommand = new Command(rightFoot,rightFootSequence,"RightFoot");
   commandList.push(rightFootCommand);
 
   
   //repeat each sequence so that their total length is the max nb of steps
-  commandList.forEach(function(c){
-    var n = max/c.sequence.length;
+  commandList.forEach(c =>{
+    const n = max/c.sequence.length;
     c.sequenceRepeated = repeatArray(c.sequence,n);
   })
 
   //go through the sequence and check simultaneaous hand and foot hihat
-  for(var c = 0;c<max;c++){
+  for(let c = 0;c<max;c++){
     if(commandList[3].sequenceRepeated[c] == "footHiHat" ){
       if(commandList[1].sequenceRepeated[c] == "opHiHat"){
         commandList[1].sequenceRepeated[c] = "clHiHat";
@@ -676,9 +668,9 @@ function createDrumCommands(){
   
 
   //compute the nb of bars needed
-  var loops = Math.floor(max/resolution);
-  var remainder = max%resolution;
-  var remain = remainder == 0 ? "" : (" and " + remainder + " steps");
+  const loops = Math.floor(max/resolution);
+  const remainder = max%resolution;
+  const remain = remainder == 0 ? "" : (" and " + remainder + " steps");
   $("#loop").html("Loops in <b>" + loops + "</b> " + resolution +  "/" + subdivision+ " bars" + remain + " ("+ max+ " steps)" );
 }
 
@@ -691,7 +683,7 @@ function displayParams(){
 
   $("#limbs").empty();
 
-  commandList.forEach(function(c){
+  commandList.forEach(c =>{
     $("#limbs").append(c.display());
     //show mute icon
     if(c.muted){
@@ -702,8 +694,7 @@ function displayParams(){
     }
     //set mute/unmute
     $("#" + c.name + "").click(function(){
-      var self = $(this);
-      if(self.is(":checked")){
+      if($(this).is(":checked")){
         c.muted = false;
         if(c.name == "Metronome"){
           metronomeMute = false;
@@ -721,9 +712,8 @@ function displayParams(){
 
 
 function initCanvas(){
-  var w =0;
-  var h = 0;
-  var c = $("<canvas id='canvas' width='" + w + "' height='" + h + "''></canvas>");
+
+  const c = $("<canvas id='canvas' width='0' height='0''></canvas>");
   $("#canvasDiv").append(c);
   canvas = document.getElementById("canvas");
   ctx = canvas.getContext("2d");
@@ -732,12 +722,12 @@ function initCanvas(){
 function drawSheet(c){
   canvas.width = max*wSpace + startSpace - hSpace/2;
   canvas.height = hStartSpace+6*hSpace;
-  var length = max*wSpace + startSpace;
+  const length = max*wSpace + startSpace;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   ctx.fillStyle = "black";
   ctx.font = "bold 59px Arial";
-  var x = resolution>9? startSpace - 85 : startSpace-55;
+  const x = resolution>9? startSpace - 85 : startSpace-55;
   ctx.fillText(resolution, x, 80);
   ctx.fillText(subdivision, startSpace-55, 120);
 
@@ -752,7 +742,7 @@ function drawSheet(c){
   //horizontal lines
   ctx.strokeStyle = "black";
   ctx.beginPath();
-  for (var i = 1;i<6;i++){
+  for (let i = 1;i<6;i++){
     ctx.moveTo(0,i*hSpace+hStartSpace);
     ctx.lineTo(length,i*hSpace+hStartSpace);
     ctx.stroke();
@@ -760,7 +750,7 @@ function drawSheet(c){
   ctx.closePath();
   
   //vertical lines
-  for(var i = 0;i<=max;i++){
+  for(let i = 0;i<=max;i++){
     
     if(i%resolution == 0){
       ctx.lineWidth = 3;
@@ -788,8 +778,8 @@ function drawSheet(c){
   ctx.closePath();
   
   //notes
-  commandList.forEach(function(co){
-    co.sequenceRepeated.forEach(function(note,i){
+  commandList.forEach(co =>{
+    co.sequenceRepeated.forEach((note,i)=>{
       drawNote(ctx,note,i,co.limb.name,co);
     })
   })
@@ -814,15 +804,15 @@ function drawNote(ctx,note,i,limb,co){
 }
 
 function drawNoteHead(i,note,limb,fla){
-  var x = startSpace + i*wSpace;
-  var y = getHeight(note);
-  var sc = 0.25;
-  var ULx, ULy; // Upper Left corner
-  var LLx, LLy; // Lower Left corner
-  var URx, URy; // Upper Right corner
-  var LRx, LRy; // Lower Right corner
-  var CLx, CLy; // Center Left 
-  var CRx, CRy; // Center Right
+  const x = startSpace + i*wSpace;
+  const y = getHeight(note);
+  const sc = 0.25;
+  let ULx, ULy; // Upper Left corner
+  let LLx, LLy; // Lower Left corner
+  let URx, URy; // Upper Right corner
+  let LRx, LRy; // Lower Right corner
+  let CLx, CLy; // Center Left 
+  let CRx, CRy; // Center Right
 
   ULx = x - 30*sc;
   ULy = y - 28*sc;

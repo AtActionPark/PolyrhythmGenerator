@@ -1,33 +1,21 @@
 'use strict';
-//greatest common denominator
-function gcd(a,b){
-  var t,b,a
-  while(b != 0){
-    t = b;
-    b = a%b
-    a=t
-  }
-  return a;
-}
-//least common multiplier
-function lcm(a,b){
-  return a*b/gcd(a,b)
-}
 
 //SEEDED RANDOMS. Stolen somewhere
 // Establish the parameters of the generator
-var m = 25;
+const m = 25;
 // a - 1 should be divisible by m's prime factors
-var a = 11;
+const a = 11;
 // c and m should be co-prime
-var c = 17;
-var rand = function() {
+const c = 17;
+const rand = function() {
   // define the recurrence relationship
   seed = (a * seed + c) % m;
   // return an integer
   // Could return a float in (0, 1) by dividing by m
   return seed/m;
 };
+
+
 
 function getRandomFloat(a,b){
   return rand()*(b-a) +a
@@ -40,7 +28,7 @@ function pickRandomArray(arr) {
 }
 
 Array.prototype.shuffle = function() {
-  var i = this.length, j, temp;
+  let i = this.length, j, temp;
   if ( i == 0 ) return this;
   while ( --i ) {
      j = Math.floor( getRandomFloat(0,1) * ( i + 1 ) );
@@ -51,18 +39,25 @@ Array.prototype.shuffle = function() {
   return this;
 }
 function repeatArray(arr, count) {
-  var result = new Array();
-  for(var i=0; i<count; i++) {
+  let result = new Array();
+  for(let i=0; i<count; i++) {
     result = result.concat(arr)
   }  
   return result;    
 }
-function drawArray(arr){
-  var result = ''
-  arr.forEach(function(a){
-    result+=a
-  })
-  return result
+//greatest common denominator
+function gcd(a,b){
+  let t
+  while(b != 0){
+    t = b;
+    b = a%b
+    a=t
+  }
+  return a;
+}
+//least common multiplier
+function lcm(a,b){
+  return a*b/gcd(a,b)
 }
 
 function getDensity(limb){
@@ -86,7 +81,7 @@ function getLength(limb){
     return lHandLength
 }
 function getInstrument(limb){
-  var result = []
+  let result = []
   if(limb == 'rightFoot')
     result =  ['kick']
   else if (limb == 'leftFoot')
@@ -186,12 +181,12 @@ function isFla(limb,c){
 }
 //Thx Tomáš Kratochvíla @ http://stackoverflow.com/questions/38323525/minimum-least-common-multiplier-for-random-combinations
 function minPossibleLength(knownLength, lengthsSize) {  
-  var lengths = []    
-  var min = 27720; // Maximum for bound range [2..11]
+  let lengths = []    
+  let min = 27720; // Maximum for bound range [2..11]
   if (lengthsSize == 1)
     return knownLength;
   lengths[0] = knownLength;
-  for(var i = minStep; i<=maxStep; i++) {
+  for(let i = minStep; i<=maxStep; i++) {
     if (i != knownLength) {
       lengths[1] = i;
       if (lengthsSize == 2) {
@@ -203,7 +198,7 @@ function minPossibleLength(knownLength, lengthsSize) {
           }
         }
       else
-      for(var j = minStep+1; j<=maxStep; j++) {
+      for(let j = minStep+1; j<=maxStep; j++) {
         if (i != j && j!= knownLength) {
           lengths[2] = j;
         if (lengthsSize == 3) {
@@ -214,7 +209,7 @@ function minPossibleLength(knownLength, lengthsSize) {
           }
         }
       else
-          for(var k = minStep+2; k<=maxStep; k++) {
+          for(let k = minStep+2; k<=maxStep; k++) {
             if (i != k && j != k && k!= knownLength) {
               lengths[3] = k;
               if (getLoopLength(lengths) < min) {
@@ -259,11 +254,11 @@ function BufferLoader(context, urlList, callback) {
 }
 BufferLoader.prototype.loadBuffer = function(url, index) {
   // Load buffer asynchronously
-  var request = new XMLHttpRequest();
+  const request = new XMLHttpRequest();
   request.open("GET", url, true);
   request.responseType = "arraybuffer";
 
-  var loader = this;
+  const loader = this;
 
   request.onload = function() {
     // Asynchronously decode the audio file data in request.response
@@ -291,7 +286,7 @@ BufferLoader.prototype.loadBuffer = function(url, index) {
   request.send();
 }
 BufferLoader.prototype.load = function() {
-  for (var i = 0; i < this.urlList.length; ++i)
+  for (let i = 0; i < this.urlList.length; ++i)
   this.loadBuffer(this.urlList[i], i);
 }
 function finishedLoading(bufferList) {
@@ -331,12 +326,12 @@ function bjorklund(steps, pulses) {
     return new Array();
   }
 
-  var pattern = [];
-  var    counts = [];
-  var   remainders = [];
-  var   divisor = steps - pulses;
+  let pattern = [];
+  let counts = [];
+  let remainders = [];
+  let divisor = steps - pulses;
   remainders.push(pulses);
-  var level = 0;
+  let level = 0;
 
   while(true) {
     counts.push(Math.floor(divisor / remainders[level]));
@@ -350,11 +345,11 @@ function bjorklund(steps, pulses) {
   
   counts.push(divisor);
 
-  var r = 0;
-  var build = function(level) {
+  let r = 0;
+  const build = function(level) {
     r++;
     if (level > -1) {
-      for (var i=0; i < counts[level]; i++) {
+      for (let i=0; i < counts[level]; i++) {
         build(level-1); 
       } 
       if (remainders[level] != 0) {
@@ -373,16 +368,16 @@ function bjorklund(steps, pulses) {
 
 
 function convertBase(value, from_base, to_base) {
-  var range = '0123456789ab-cdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/'.split('');
-  var from_range = range.slice(0, from_base);
-  var to_range = range.slice(0, to_base);
+  const range = '0123456789ab-cdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/'.split('');
+  const from_range = range.slice(0, from_base);
+  const to_range = range.slice(0, to_base);
   
-  var dec_value = value.split('').reverse().reduce(function (carry, digit, index) {
+  let dec_value = value.split('').reverse().reduce(function (carry, digit, index) {
     if (from_range.indexOf(digit) === -1) throw new Error('Invalid digit `'+digit+'` for base '+from_base+'.');
     return carry += from_range.indexOf(digit) * (Math.pow(from_base, index));
   }, 0);
   
-  var new_value = '';
+  let new_value = '';
   while (dec_value > 0) {
     new_value = to_range[dec_value % to_base] + new_value;
     dec_value = (dec_value - (dec_value % to_base)) / to_base;
