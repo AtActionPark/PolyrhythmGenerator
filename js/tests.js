@@ -2,7 +2,7 @@
 QUnit.config.autostart = false;
 var unitTest = false
 
-function test(){
+function runTest(){
 	if(!unitTest)
 		QUnit.start()
 	

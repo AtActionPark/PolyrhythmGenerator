@@ -1,5 +1,4 @@
 "use strict";
-var unitTest = true;
 // USER PARAMS
 var tempo = 60.0;
 //nb of steps per bar
