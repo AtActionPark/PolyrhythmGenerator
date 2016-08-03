@@ -271,7 +271,10 @@ input[type=checkbox]:checked + label{
     position:fixed;
     bottom:0px;
     z-index: 200;
+    max-height: 500px;
+    overflow:auto;
 }
+
 
 
 

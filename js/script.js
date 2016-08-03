@@ -126,9 +126,7 @@ $(document).ready(function(){
     "hide.bs.dropdown":  function() { return this.closable; }
   });
 
-  if(unitTest){
-    $('body').append('<div id="qunit"></div><div id="qunit-fixture"></div>')
-  }
+  
 });
 
 function iosHandler(e){
@@ -152,8 +150,8 @@ function iosHandler(e){
 function generateSong(){
   generationSeed = Math.random();
   generationSeed = generationSeed.toFixed(seedPrecision);
-  seed = generationSeed;
 
+  seed = generationSeed;
   generateAndStart();
 }
 function generateAndStart(){
@@ -216,7 +214,7 @@ function randomize(){
   generationSeed = Math.random();
   generationSeed = generationSeed.toFixed(seedPrecision);
   seed = generationSeed;
-  console.log(generationSeed);
+
 
   var t = getRandomInt(30,120);
   $("#tempo").val(t);
@@ -298,11 +296,20 @@ function replaceMaxLength(mini){
 //SEED
 //Concatenates all needed params for the seed
 function generateSeed(){
-  var subString = convertBase(resolution.toString(),10,12) + ""+ parseInt(subdivision) + ""  + parseInt(densityCategory) + ""+ parseInt(nbOfRhythms) +  "" + (useLeftFoot?1:0) + "" + (orchestrate?1:0) + "" + (euclideanRhythm?1:0);
-  var s = parseInt(tempo) + "-" + parseInt(maxLength) + "-" + subString  ;
+  var subString = convertBase(resolution.toString(),10,12) 
+    + ""+ parseInt(subdivision) 
+    + ""  + parseInt(densityCategory) 
+    + ""+ parseInt(nbOfRhythms) 
+    +  "" + (useLeftFoot?1:0) + "" 
+    + (orchestrate?1:0) + "" 
+    + (euclideanRhythm?1:0);
+
+  var s = parseInt(tempo) + "-" 
+    + parseInt(maxLength) + "-" 
+    + subString  ;
 
   var convertedParams = convertBase(s,13,64);
-  var convertedSeed = convertBase(Math.floor(generationSeed * 100000).toString(),10,64);
+  var convertedSeed = convertBase(Math.round(parseFloat(generationSeed,10) * Math.pow(10,seedPrecision)).toString(),10,64);
 
   var result = convertedParams + "@" +  convertedSeed;
 
@@ -317,6 +324,7 @@ function generateSeed(){
   }
   return result;
 }
+
 //Reads the seed value input 
 function readSeed(){
   var input = $("#seedInput").val().trim();
@@ -330,7 +338,10 @@ function loadSeed(input){
   var convertedForce = s[2];
 
   var reconvertedParams = convertBase(convertedParams,64,13);
-  var reconvertedSeed = convertBase(convertedSeed,64,10);
+
+  var reconvertedSeed = parseFloat(convertBase(convertedSeed,64,10),10).toFixed(seedPrecision);
+  seed = reconvertedSeed/Math.pow(10,seedPrecision) || 1;
+
   if(convertedForce){
     var reconvertedForce = convertBase(convertedForce,64,12);
   }
@@ -344,7 +355,7 @@ function loadSeed(input){
 
   var paramsSubString = params[2].toString();
   paramsSubString = paramsSubString.split("");
-  console.log("paramsSubString: " + paramsSubString);
+
 
   resolution = parseInt(convertBase(paramsSubString[0].toString(),12,10)) ||4;
   $("#resolution").val(resolution);
@@ -369,7 +380,7 @@ function loadSeed(input){
   euclideanRhythm = paramsSubString[6] ==0? false: true|| false;
   $("#euclidean").prop("checked", euclideanRhythm);
 
-  seed = parseFloat(reconvertedSeed)/100000 || 1;
+  
 
   forceLeftHand = 0;
   forceRightHand = 0;
@@ -404,7 +415,7 @@ function loadSeed(input){
 }
 function shareSeed(){
   //
-  window.history.pushState("seed", "seed", "/PolyrhythmGenerator?"+generateSeed());
+  window.history.pushState("seed", "seed", "/PolyrhythmGenerator/?"+generateSeed());
 }
 
 
@@ -652,7 +663,7 @@ function createDrumCommands(){
     c.sequenceRepeated = repeatArray(c.sequence,n);
   })
 
-  //go through the sequence and check simultaneaous hand and foot hihat, and flas
+  //go through the sequence and check simultaneaous hand and foot hihat
   for(var c = 0;c<max;c++){
     if(commandList[3].sequenceRepeated[c] == "footHiHat" ){
       if(commandList[1].sequenceRepeated[c] == "opHiHat"){
