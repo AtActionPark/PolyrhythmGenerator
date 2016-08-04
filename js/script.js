@@ -300,7 +300,7 @@ function generateSeed(){
   const convertedParams = convertBase(s,13,64);
   const convertedSeed = convertBase(Math.round(parseFloat(generationSeed,10) * Math.pow(10,seedPrecision)).toString(),10,64);
 
-  const result = convertedParams + "@" +  convertedSeed;
+  let result = convertedParams + "@" +  convertedSeed;
 
   if(forceLength){
     let forceString = "";
