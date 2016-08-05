@@ -272,7 +272,8 @@ function readURL(){
   const url = window.location.href ;
   if(url.includes("?")){
     let captured = /\?([^&]+)/.exec(url)[1]; 
-    loadSeed(captured);
+    setTimeout(loadSeed(captured),200)
+
   }
 }
 function reset(){
