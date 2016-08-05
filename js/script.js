@@ -109,6 +109,7 @@ $(document).ready(() =>{
 
   if(iOS){
     window.addEventListener("touchend",iosHandler , false);
+    alert('added listener')
   }
   else{
     //async loading of all samples
@@ -141,6 +142,7 @@ $(document).ready(() =>{
       $('.dropdown-toggle').removeClass('open');
     }
   }); 
+  alert('bootstraped')
 });
 
 function iosHandler(e){
@@ -155,7 +157,7 @@ function iosHandler(e){
     source.noteOn(0);
 
     loadSamples();
-    //readURL();
+    readURL();
   }
 }
 
