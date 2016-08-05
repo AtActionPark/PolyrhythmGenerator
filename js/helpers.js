@@ -143,11 +143,11 @@ function getColor(limb,fla){
   if(limb == 'rightFoot')
     return '#333'
   else if (limb == 'leftFoot')
-    return "gray"
+    return "#708090"
   else if (limb == 'rightHand')
-    return "red"
+    return '#DC143C'
   else if (limb == 'leftHand')
-    return "blue"
+    return "#4169E1"
 }
 function getOppositeColor(limb){
   if (limb == 'rightHand')
@@ -383,6 +383,12 @@ function convertBase(value, from_base, to_base) {
     dec_value = (dec_value - (dec_value % to_base)) / to_base;
   }
   return new_value || '0';
+}
+
+function pad(n, width, z) {
+  z = z || '0';
+  n = n + '';
+  return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 }
 
 

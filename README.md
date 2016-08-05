@@ -5,13 +5,17 @@ Parameters are:
 * Tempo
 * Time Signature
 * Max length (desired maximum length in step of the output. Not taken into account if not possible)
-* Density (0: few notes, 4: lots of notes per sequence)
-* Number of Rhythms (how many different length rhythm do we want)
-* Left foot
-* Orchestrate (if unticked, each limb will only play one instrument)
+* Notes density
+* Number of Rhythms 
+* Use left foot
+* Orchestrate 
 * Euclidean (use euclidean rhythm - bjorklund algo - to produce evenly distributed patterns)
 
-And a way to force specific length for each limb. If used, the Number of Ryhthm param will not be used anymore
+And a way to force specific length for each limb. 
+
+Each combination produces a seed that cam be loaded or inputed in the url for saving/sharing.
+
+Would appreciate any input
 
 [html preview](https://atactionpark.github.io/PolyrhythmGenerator/)
 

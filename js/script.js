@@ -1,5 +1,5 @@
 "use strict";
-
+var dev = true;
 // USER PARAMS
 let tempo = 60.0;
 //nb of steps per bar
@@ -119,14 +119,24 @@ $(document).ready(() =>{
         $(this).children(".description").hide();
     });
   }
-  $(document).on("click", ".dropdown-menu", (e) => e.stopPropagation());
-  $(".dropdown").on({
-    "shown.bs.dropdown": function() { this.closable = false; },
-    "click":             function() { this.closable = true; },
-    "hide.bs.dropdown":  function() { return this.closable; }
+
+  //bootstrap toggles closes automatically on click - recreate the open/close behaviour manually
+  $('.dropdown-toggle').on('click', function (event) {
+    $(this).parent().toggleClass('open');
   });
 
-  
+  $('body').on('click', function (e) {
+    if (!$('.dropdown-toggle').is(e.target) 
+        && $('.dropdown-toggle').has(e.target).length === 0 
+        && $('.open').has(e.target).length === 0){
+      $('.dropdown-toggle').removeClass('open');
+    }
+  });
+  getUserParams();
+  createEmptyDrumCommands();
+
+  displayParams();
+  drawSheet();
 });
 
 function iosHandler(e){
@@ -159,6 +169,8 @@ function generateAndStart(){
 
   getUserParams();
   $("#seed").html(generateSeed(seed));
+  if(!dev)
+    shareSeed();
 
   //Need to check against specified max desired length
 
@@ -188,7 +200,7 @@ function getUserParams(){
   resolution = parseInt($("#resolution").val());
   subdivision = parseInt($("#subdivision").val());
 
-  tempo = parseInt($("#tempo").val());
+  tempo = $( window ).width() > 768? parseInt($("#tempo").val()) : parseInt($("#tempoxs").val());
 
   maxLength = parseInt($("#maxLength").val());
   if(maxLength<resolution){
@@ -200,7 +212,7 @@ function getUserParams(){
 
   nbOfRhythms = parseInt($("#nbOfRhythms").val());
 
-  useLeftFoot = $("#leftFoot").is(":checked");
+  useLeftFoot = $("#useLeftFoot").is(":checked");
   orchestrate = $("#orchestrate").is(":checked");
   euclideanRhythm = $("#euclidean").is(":checked");
 
@@ -215,24 +227,30 @@ function randomize(){
   generationSeed = generationSeed.toFixed(seedPrecision);
   seed = generationSeed;
 
-  $("#tempo").val(getRandomInt(30,120));
+  var t = getRandomInt(30,120)
+  $("#tempo").val(t);
+  $("#tempoxs").val(t);
   $("#resolution").val(getRandomInt(2,9));
   $("#subdivision").val(pickRandomArray(possibleSubdivisions));
   $("#maxLength").val(getRandomInt(20,80));
   $("#density").val(getRandomInt(0,4));
   $("#nbOfRhythms").val(getRandomInt(2,4));
-  $("#leftFoot").prop("checked", getRandomInt(0,1));
+  $("#useLeftFoot").prop("checked", getRandomInt(0,1));
   $("#orchestrate").prop("checked", getRandomInt(0,1));
   $("#euclidean").prop("checked", getRandomInt(0,1));
   generateSong();
 
 }
 function changeTempo(){
-  tempo = parseInt($("#tempo").val());
+  tempo = $( window ).width() > 768? parseInt($("#tempo").val()) : parseInt($("#tempoxs").val());
+  $("#tempo").val(tempo)
+  $("#tempoxs").val(tempo)
   if(tempo<1){
     tempo = 1;
   }
-  $("#seed").html(generateSeed(seed));
+  if($("#seed").html() !== "-"){
+    $("#seed").html(generateSeed(seed));
+  }
 }
 function changeForceLength(){
   forceLength = $("#forceLength").is(":checked");
@@ -339,6 +357,7 @@ function loadSeed(input){
 
   tempo = parseInt(params[0]) || 60;
   $("#tempo").val(tempo);
+  $("#tempoxs").val(tempo);
 
   maxLength = parseInt(params[1]) || 32;
   $("#maxLength").val(maxLength);
@@ -362,7 +381,7 @@ function loadSeed(input){
   $("#nbOfRhythms").val(parseInt(nbOfRhythms));
 
   useLeftFoot = paramsSubString[4] ==0? false: true|| false;
-  $("#leftFoot").prop("checked", useLeftFoot);
+  $("#useLeftFoot").prop("checked", useLeftFoot);
 
   orchestrate = paramsSubString[5] ==0? false: true|| false;
   $("#orchestrate").prop("checked", orchestrate);
@@ -441,7 +460,7 @@ function pause(){
   else{
     context.resume();
   }
-  $("#pause").html(play? "Pause":"Play");
+  $("#pause").html(play? "<span class='glyphicon glyphicon-pause'>":"<span class='glyphicon glyphicon-play'>");
 }
 
 
@@ -491,17 +510,18 @@ Command.prototype.play = function(c){
 };
 //Returns basic info/buttons for the sequence
 Command.prototype.display = function(){
-  const mute = "<input id=" + this.name + " type=checkbox><label></label> ";
-  const length = " : " + this.sequence.length  + " steps";
+  const mute = "<input id=" + this.limb.name + " type=checkbox><label></label>";
+  const length = "<div class=' arrow glyphicon glyphicon-arrow-right'> </div> " + pad(this.sequence.length,2)  + " steps";
   let result = "";
   for(let i = 0;i<this.sequence.length;i++){
-    result +=  this.sequence[i] + " ";
+    const res = this.sequence[i] != empty? 'x' : empty
+    result +=  res + " ";
   }
 
-  if(this.name == "Metronome"){
-    return  mute + "<div class='limbDiv' ><b>" + "<div class='inline '"+ this.name + ">" + this.name + "</b></div></div></br></br>";
+  if(this.limb.name === "metronome"){
+    return  mute + "<div class='limbDiv inline'><b><div class='inline '"+ this.limb.name + ">" + this.name + "</b></div></div></br>";
   }
-  return mute + "<div class='limbDiv' ><b>" + "<div class='inline '"+ this.name + ">" + this.name + "</div>" + length + " : " + result +  "</b></div></br>";
+  return mute + "<div class='limbDiv inline'><b><div class='inline "+ this.limb.name + "'>" + this.name + "</div>" + length + " : " + result +  "</b></div></br>";
 }
 
 //MAIN ALGO
@@ -627,24 +647,24 @@ function createDrumCommands(){
 
   const leftHand = new Limb("leftHand");
   const leftHandSeq = randomSequence(leftHand);
-  const leftHandCommand = new Command(leftHand,leftHandSeq,"LeftHand");
+  const leftHandCommand = new Command(leftHand,leftHandSeq,"Left Hand");
   commandList.push(leftHandCommand);
 
   const rightHand = new Limb("rightHand");
   const rightHandSeq = randomSequence(rightHand);
-  const rightHandCommand = new Command(rightHand,rightHandSeq,"RightHand");
+  const rightHandCommand = new Command(rightHand,rightHandSeq,"Right Hand");
   commandList.push(rightHandCommand);
 
   const leftFoot = new Limb("leftFoot");
   const leftFootSequence = randomSequence(leftFoot);
-  const leftFootCommand = new Command(leftFoot,leftFootSequence,"LeftFoot");
+  const leftFootCommand = new Command(leftFoot,leftFootSequence,"Left Foot ");
   if(useLeftFoot){
     commandList.push(leftFootCommand);
   }
 
   const rightFoot = new Limb("rightFoot");
   const rightFootSequence = randomSequence(rightFoot);
-  const rightFootCommand = new Command(rightFoot,rightFootSequence,"RightFoot");
+  const rightFootCommand = new Command(rightFoot,rightFootSequence,"Right Foot");
   commandList.push(rightFootCommand);
 
   
@@ -673,13 +693,51 @@ function createDrumCommands(){
   const remain = remainder == 0 ? "" : (" and " + remainder + " steps");
   $("#loop").html("Loops in <b>" + loops + "</b> " + resolution +  "/" + subdivision+ " bars" + remain + " ("+ max+ " steps)" );
 }
+//Only used on init to have something to display
+function createEmptyDrumCommands(){
+  commandList = [];
+  max = 16;
+  const empt = [empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty,empty]
+
+  const metronome = new Limb("metronome");
+  const metronomeSequence = empt;
+  const metronomeCommand = new Command(metronome,metronomeSequence,"Metronome");
+  metronomeCommand.muted = metronomeMute;
+  commandList.push(metronomeCommand);
+
+  const leftHand = new Limb("leftHand");
+  const leftHandSeq = empt;
+  const leftHandCommand = new Command(leftHand,leftHandSeq,"Left Hand");
+  commandList.push(leftHandCommand);
+
+  const rightHand = new Limb("rightHand");
+  const rightHandSeq = empt;
+  const rightHandCommand = new Command(rightHand,rightHandSeq,"Right Hand");
+  commandList.push(rightHandCommand);
+
+  const leftFoot = new Limb("leftFoot");
+  const leftFootSequence = empt;
+  const leftFootCommand = new Command(leftFoot,leftFootSequence,"Left Foot");
+  commandList.push(leftFootCommand);
+
+  const rightFoot = new Limb("rightFoot");
+  const rightFootSequence = empt;
+  const rightFootCommand = new Command(rightFoot,rightFootSequence,"Right Foot");
+  commandList.push(rightFootCommand);
+
+  
+  //compute the nb of bars needed
+  const loops = Math.floor(max/resolution);
+  const remainder = max%resolution;
+  const remain = remainder == 0 ? "" : (" and " + remainder + " steps");
+  $("#loop").html("Loops in <b>" + loops + "</b> " + resolution +  "/" + subdivision+ " bars" + remain + " ("+ max+ " steps)" );
+}
 
 //DISPLAY
 //Display characteristics of the random ong and add a mute command
 function displayParams(){
-  $("#summary").empty();
   $("#pauseDiv").empty();
-  $("#pauseDiv").append("<button id='pause' class='btn btn-default' onClick='pause()''>Pause</button>");
+  $("#pauseDiv").append("<button id='pause' class='btn' onClick='pause()''><span class='glyphicon glyphicon-pause'></span></button>");
 
   $("#limbs").empty();
 
@@ -687,22 +745,22 @@ function displayParams(){
     $("#limbs").append(c.display());
     //show mute icon
     if(c.muted){
-      $("#" + c.name + "").prop("checked", false);
+      $("#" + c.limb.name + "").prop("checked", false);
     }
     else{
-       $("#" + c.name + "").prop("checked", true);
+       $("#" + c.limb.name + "").prop("checked", true);
     }
     //set mute/unmute
-    $("#" + c.name + "").click(function(){
+    $("#" + c.limb.name + "").click(function(){
       if($(this).is(":checked")){
         c.muted = false;
-        if(c.name == "Metronome"){
+        if(c.limb.name == "metronome"){
           metronomeMute = false;
         }
       }
       else{
         c.muted = true;
-        if(c.name == "Metronome"){
+        if(c.limb.name == "metronome"){
           metronomeMute = true;
         }
       }

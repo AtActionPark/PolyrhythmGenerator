@@ -2,24 +2,6 @@
     margin:10px;
 }
 
-#params , #seedDiv, #forceDiv, #randomDiv{
-    margin: 20px;
-    border:1px solid white;
-    padding: 10px;
-}
-
-#loadSeed, #shareSeed{
-    margin-top:10px;
-}
-#seedInput{
-    width:100%;
-    height:100%;
-}
-
-footer{
-    margin-left: 20px;
-}
-
 input[type=checkbox] + label{
     background: url("http://icons.iconarchive.com/icons/custom-icon-design/mono-general-4/16/sound-off-icon.png") no-repeat;
     height: 16px;
@@ -38,44 +20,7 @@ input[type=checkbox]:checked + label{
     position:relative;
     top:6px;
 }
-#summary{
-    width:200px;
-    display:inline-block;
-}
 
-.step{
-    display:inline-block;
-    width:15px;
-    text-align: center;
-}
-.limbDiv{
-    display: inline-block;
-}
-
-.sheetLine{
-    margin-top:-20px;
-}
-#sheet{
-    margin-top:20px;
-}
-
-.instrLabel{
-    display: inline-block;
-    width: 80px;
-}
-
-.LeftHand{
-    background-color: LightBlue ;
-}
-.RightHand{
-    background-color: LightCoral ;
-}
-.LeftFoot{
-    background-color: Gainsboro;
-}
-.RightFoot{
-    background-color: LemonChiffon;
-}
 .inline{
     display: inline-block;
 }
@@ -84,79 +29,50 @@ input[type=checkbox]:checked + label{
     background-color: white;
 }
 
-#complexityResult{
-    display:inline;
-}
-
 .med{
     width:40px;
+    height:25px;
 }
 .bg{
     width:50px;
 }
-.smaller{
-    width:25px; 
-}
-
-#generate, #random{
-    margin:10px;
-}
-
-#resolution{
-    display:inline;
-}
-.explain{
-    font-size: 11px;
-}
 
 .tiptext {
-    width:20px;
-    text-align: center;
-    display: inline-block;
-    cursor: help;
-    border-radius: 100%;
-    border: 1px solid white;
     margin-right:5px;
+    display: inline;
+    text-decoration: underline;
 }
-.description {
+.tiptext .description {
     display:none;
+    min-width:200px;
     position:absolute;
-    border:1px solid #000;
+    border:3px solid #333;
+    border-radius: 5px;
     background-color: white;
     color: black;
+    padding:10px;
+    z-index:200;
+    text-align: left;
 }
 
 
-#loop,#tempoDiv,#pauseDiv{
-    display:inline-block;
-    height:40px;
-    margin-right:20px;
-    margin-top:10px;
-    text-align: center;
-}
-
-
-
-
-.sidebar-form {
-  padding: 7px 15px 13px 15px;
-}
 @media (min-width: 768px) {
-  #page-wrapper2 {
+  #page-wrapper {
     margin: 0 0 0 275px;
-
   }
   .sidebar-nav {
     left: 0;
     list-style: none;
     height: 100%;
     margin: 0;
-    overflow-y: auto;
+    overflow-y: scroll;
+    overflow-x:hidden;
     padding: 0;
     position: fixed;
     top: 0;
-    width: 250px;
+    width: 230px;
     z-index: 1;
+    text-align:right;
   } 
   .sidebar-nav .navbar .navbar-collapse {
     padding: 0;
@@ -203,7 +119,7 @@ input[type=checkbox]:checked + label{
 
 #navbar-black.navbar-default { 
     font-size: 14px;
-    background-color: #000;
+    background-color: #111;
     color: #dddddd;
     border: 0px;
     border-radius: 0;
@@ -216,15 +132,14 @@ input[type=checkbox]:checked + label{
 #navbar-black.navbar-default .navbar-nav>.active>a:hover,
 #navbar-black.navbar-default .navbar-nav>.active>a:focus {   
     color: rgba(255, 255, 255, 1);
-    background-color: #000;
+    background-color: #111;
 }
-
 
 #sidebar-black, #column-black {
-    background-color: #000;
+    background-color: #111;
 }
 #navbar-black.navbar-default .navbar-toggle {
-    border-color: #000; 
+    border-color: #111; 
 }
 #navbar-black.navbar-default .navbar-toggle:hover,
 #navbar-black.navbar-default .navbar-toggle:focus {
@@ -233,8 +148,8 @@ input[type=checkbox]:checked + label{
 #navbar-black.navbar-default .navbar-nav>li>a,
 #navbar-black.navbar-default .navbar-nav>li>ul>li>a, 
 #navbar-black.navbar-default .navbar-brand {
-    color: #cccccc; 
-    background-color: #000;
+    color: #ddd; 
+    background-color: #111;
 }
 #navbar-black.navbar-default .navbar-toggle .icon-bar,
 #navbar-black.navbar-default .navbar-toggle:hover .icon-bar,
@@ -244,15 +159,15 @@ input[type=checkbox]:checked + label{
 
 #navbar-black.navbar-default input[type=number] {
     margin-bottom:5px ;
-    color:#000;
+    color:#111;
 }
 #navbar-black.navbar-default input[type=numberBox] {
     margin-bottom:5px ;
-    color:#000;
+    color:#111;
 }
 #navbar-black.navbar-default select {
     margin-bottom:5px ;
-    color:#000;
+    color:#111;
 }
 #navbar-black.navbar-default input[disabled]{
     color: grey ;
@@ -274,6 +189,143 @@ input[type=checkbox]:checked + label{
     max-height: 500px;
     overflow:auto;
 }
+.navbar-brand{
+    color:#eee !important;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+::-webkit-scrollbar {
+    width: 5px;
+    background-color: black;
+}
+
+::-webkit-scrollbar-thumb {
+    width: 5px;
+    background-color: #555;
+}
+
+#params, #seedDiv, #forceDiv, #randomDiv{
+    margin: 20px;
+    border:1px solid white;
+    padding: 10px;
+    text-align:right;
+}
+#seedInput{
+    width:100%;
+}
+
+.startDiv{
+    margin-bottom:0px;
+    display: inline-block;
+}
+
+li.hidden-xs.startDiv{
+    text-align: center;
+    margin-bottom:20px;
+    border-top:1px dashed #555;
+    border-bottom:1px dashed #555;
+    padding:20px;
+}
+
+#loop,#pauseDiv{
+    display:inline-block;
+    height:40px;
+    margin-right:20px;
+    margin-top:10px;
+    text-align: center;
+}
+#loop{
+    width:220px;
+}
+
+#tempoDiv{
+    display:inline-block;
+    margin-top:-5px;
+    font-weight: bold;
+    margin:auto;
+}
+.visible-xs #tempoDiv{
+    margin-left:20px;
+}
+#generate{
+    color:black;
+    background-color: white;
+    border: none;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 10px;
+}
+#loadSeed, #pause{
+    color:black;
+    background-color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    font-weight: bold;
+    margin: 10px;
+}
+#pause{
+    border: 1px solid black;
+}
+.sidebar-nav #githubDiv img{
+    text-align:center;
+    width:50px;
+    position:fixed;
+    bottom:-25px;
+    left:85px;
+}
+.leftHand, .rightHand, .leftFoot, .rightFoot{
+    width:75px;
+}
+.leftHand{
+    color: RoyalBlue  ;
+}
+.rightHand{
+    color: Crimson;
+}
+.leftFoot{
+    color: SlateGray;
+}
+
+.limbDiv{
+    margin-left:10px;
+}
+.arrow{
+    margin-left:10px;
+    margin-right:10px;
+}
+
+button:focus, button:active{
+    outline:none !important;
+}
+
+.random{
+
+    width:600px;
+    border: 1px solid white;
+}
+.black{
+    color: #111 !important;
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
