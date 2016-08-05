@@ -1,5 +1,5 @@
 "use strict";
-var dev = false;
+var dev = true;
 // USER PARAMS
 let tempo = 60.0;
 //nb of steps per bar
@@ -105,29 +105,19 @@ $(document).ready(() =>{
   context = new AudioContext();
   context.suspend();
   initCanvas();
-  let read = false;
 
   if(iOS){
     window.addEventListener("touchend",iosHandler , false);
-    alert('added listener')
   }
   else{
     //async loading of all samples
     loadSamples();
-    if(readURL())
-      read = true
-      $(".tiptext").mouseover(function() {
-        $(this).children(".description").show();
-      }).mouseout(function() {
-          $(this).children(".description").hide();
+    readURL();
+    $(".tiptext").mouseover(function() {
+      $(this).children(".description").show();
+    }).mouseout(function() {
+        $(this).children(".description").hide();
     });
-    if(!read){
-      getUserParams();
-      createEmptyDrumCommands();
-
-      displayParams();
-      drawSheet();
-    }
   }
 
   //bootstrap toggles closes automatically on click - recreate the open/close behaviour manually
@@ -141,12 +131,17 @@ $(document).ready(() =>{
         && $('.open').has(e.target).length === 0){
       $('.dropdown-toggle').removeClass('open');
     }
-  }); 
-  alert('bootstraped')
+  });
+  getUserParams();
+  createEmptyDrumCommands();
+
+  displayParams();
+  drawSheet();
 });
 
 function iosHandler(e){
   if (locked){
+
     alert("unlocked");
     locked = false;
     // create empty buffer
@@ -278,9 +273,7 @@ function readURL(){
   if(url.includes("?")){
     let captured = /\?([^&]+)/.exec(url)[1]; 
     loadSeed(captured);
-    return true
   }
-  return false;
 }
 function reset(){
   context.resume();
