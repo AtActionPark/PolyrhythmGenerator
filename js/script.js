@@ -115,10 +115,10 @@ $(document).ready(() =>{
     loadSamples();
     if(readURL())
       read = true
-    $(".tiptext").mouseover(function() {
-      $(this).children(".description").show();
-    }).mouseout(function() {
-        $(this).children(".description").hide();
+      $(".tiptext").mouseover(function() {
+        $(this).children(".description").show();
+      }).mouseout(function() {
+          $(this).children(".description").hide();
     });
     if(!read){
       getUserParams();
@@ -155,7 +155,7 @@ function iosHandler(e){
     source.noteOn(0);
 
     loadSamples();
-    readURL();
+    //readURL();
   }
 }
 
