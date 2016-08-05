@@ -105,6 +105,7 @@ $(document).ready(() =>{
   context = new AudioContext();
   context.suspend();
   initCanvas();
+  let read = false;
 
   if(iOS){
     window.addEventListener("touchend",iosHandler , false);
@@ -112,7 +113,8 @@ $(document).ready(() =>{
   else{
     //async loading of all samples
     loadSamples();
-    readURL();
+    if(readURL())
+      read = true
     $(".tiptext").mouseover(function() {
       $(this).children(".description").show();
     }).mouseout(function() {
@@ -132,11 +134,14 @@ $(document).ready(() =>{
       $('.dropdown-toggle').removeClass('open');
     }
   });
-  getUserParams();
-  createEmptyDrumCommands();
+  if(!read){
+    getUserParams();
+    createEmptyDrumCommands();
 
-  displayParams();
-  drawSheet();
+    displayParams();
+    drawSheet();
+  }
+  
 });
 
 function iosHandler(e){
@@ -273,7 +278,9 @@ function readURL(){
   if(url.includes("?")){
     let captured = /\?([^&]+)/.exec(url)[1]; 
     loadSeed(captured);
+    return true
   }
+  return false;
 }
 function reset(){
   context.resume();
