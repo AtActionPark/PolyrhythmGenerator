@@ -120,6 +120,13 @@ $(document).ready(() =>{
     }).mouseout(function() {
         $(this).children(".description").hide();
     });
+    if(!read){
+      getUserParams();
+      createEmptyDrumCommands();
+
+      displayParams();
+      drawSheet();
+    }
   }
 
   //bootstrap toggles closes automatically on click - recreate the open/close behaviour manually
@@ -133,15 +140,7 @@ $(document).ready(() =>{
         && $('.open').has(e.target).length === 0){
       $('.dropdown-toggle').removeClass('open');
     }
-  });
-  if(!read){
-    getUserParams();
-    createEmptyDrumCommands();
-
-    displayParams();
-    drawSheet();
-  }
-  
+  }); 
 });
 
 function iosHandler(e){
