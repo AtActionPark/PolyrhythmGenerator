@@ -93,6 +93,8 @@ function getInstrument(limb){
   return orchestrate? result : [result[0]]
 }
 function getBuffer(instr){
+  if(instr == null)
+    return
   if(instr == 'kick')
     return kickSound.buffer
   else if (instr == 'snare')

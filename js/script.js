@@ -145,7 +145,6 @@ $(document).ready(() =>{
 
 function iosHandler(e){
   if (locked){
-
     alert("unlocked");
     locked = false;
     // create empty buffer
