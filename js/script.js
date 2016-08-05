@@ -1,3 +1,4 @@
+
 "use strict";
 var dev = false;
 // USER PARAMS
@@ -105,6 +106,7 @@ $(document).ready(() =>{
   context = new AudioContext();
   context.suspend();
   initCanvas();
+  let read = false;
 
   if(iOS){
     window.addEventListener("touchend",iosHandler , false);
@@ -112,7 +114,8 @@ $(document).ready(() =>{
   else{
     //async loading of all samples
     loadSamples();
-    readURL();
+    if(readURL())
+      read = true
     $(".tiptext").mouseover(function() {
       $(this).children(".description").show();
     }).mouseout(function() {
@@ -132,11 +135,14 @@ $(document).ready(() =>{
       $('.dropdown-toggle').removeClass('open');
     }
   });
-  getUserParams();
-  createEmptyDrumCommands();
+  if(!read){
+    getUserParams();
+    createEmptyDrumCommands();
 
-  displayParams();
-  drawSheet();
+    displayParams();
+    drawSheet();
+  }
+  
 });
 
 function iosHandler(e){
@@ -272,9 +278,10 @@ function readURL(){
   const url = window.location.href ;
   if(url.includes("?")){
     let captured = /\?([^&]+)/.exec(url)[1]; 
-    setTimeout(loadSeed(captured),200)
-
+    loadSeed(captured);
+    return true
   }
+  return false;
 }
 function reset(){
   context.resume();
@@ -478,9 +485,7 @@ function Limb(name){
 Limb.prototype.play = function(instr,c){
   this.source = context.createBufferSource();
   this.source.connect(this.gain);
-  const buffer = getBuffer(instr)
-  if(buffer !== null)
-    this.source.buffer = buffer;
+  this.source.buffer = getBuffer(instr);
   this.gain.gain.value = getGain(instr);
 
   let time = 0;
@@ -958,10 +963,6 @@ function drawMiddleLine(i,note,limb,fla){
 function isMuted(limb){
   return limb.muted;
 }
-
-
-
-
 
 
 
