@@ -478,7 +478,9 @@ function Limb(name){
 Limb.prototype.play = function(instr,c){
   this.source = context.createBufferSource();
   this.source.connect(this.gain);
-  this.source.buffer = getBuffer(instr);
+  const buffer = getBuffer(instr)
+  if(buffer !== null)
+    this.source.buffer = buffer;
   this.gain.gain.value = getGain(instr);
 
   let time = 0;
