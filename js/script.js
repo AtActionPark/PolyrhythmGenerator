@@ -102,14 +102,13 @@ const rideBias = 3;
 $(document).ready(function(){
   const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
-  alert("init");
+
   context = new AudioContext();
   context.suspend();
   initCanvas();
   let read = false;
 
   if(iOS){
-    alert("ios");
     window.addEventListener("touchend",iosHandler , false);
   }
   else{
@@ -143,17 +142,15 @@ $(document).ready(function(){
     displayParams();
     drawSheet();
   }
-  
 });
 
 function iosHandler(e){
   if (locked){
-
     alert("unlocked");
     locked = false;
     // create empty buffer
-    const buffer = context.createBuffer(1, 1, 22050);
-    const source = context.createBufferSource();
+    let buffer = context.createBuffer(1, 1, 22050);
+    let source = context.createBufferSource();
     source.buffer = buffer;
     source.connect(context.destination);
     source.noteOn(0);
