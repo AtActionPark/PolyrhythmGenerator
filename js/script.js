@@ -109,6 +109,7 @@ $(document).ready(function(){
   let read = false;
 
   if(iOS){
+    alert("ios");
     window.addEventListener("touchend",iosHandler , false);
   }
   else{
