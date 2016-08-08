@@ -1,6 +1,6 @@
 
 "use strict";
-var dev = true;
+var dev = false;
 // USER PARAMS
 let tempo = 60.0;
 //nb of steps per bar
