@@ -1,6 +1,6 @@
 
 "use strict";
-var dev = false;
+var dev = true;
 // USER PARAMS
 let tempo = 60.0;
 //nb of steps per bar
@@ -99,7 +99,7 @@ const noteRadius = hSpace/3;
 const noteRadiusSmall = hSpace/4;
 const rideBias = 3;
 
-$(document).ready(() =>{
+$(document).ready(function(){
   const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -456,7 +456,7 @@ function scheduler(){
     return;
   }
   while(nextNoteTime < context.currentTime + scheduleAheadTime){
-    commandList.forEach((c) => c.play(cursor));
+    commandList.forEach(function(c){c.play(cursor)});
     nextNote();
   }
 }
@@ -677,7 +677,7 @@ function createDrumCommands(){
 
   
   //repeat each sequence so that their total length is the max nb of steps
-  commandList.forEach(c =>{
+  commandList.forEach(function(c){
     const n = max/c.sequence.length;
     c.sequenceRepeated = repeatArray(c.sequence,n);
   })
@@ -749,7 +749,7 @@ function displayParams(){
 
   $("#limbs").empty();
 
-  commandList.forEach(c =>{
+  commandList.forEach(function(c){
     $("#limbs").append(c.display());
     //show mute icon
     if(c.muted){
@@ -844,8 +844,8 @@ function drawSheet(c){
   ctx.closePath();
   
   //notes
-  commandList.forEach(co =>{
-    co.sequenceRepeated.forEach((note,i)=>{
+  commandList.forEach(function(co){
+    co.sequenceRepeated.forEach(function(note,i){
       drawNote(ctx,note,i,co.limb.name,co);
     })
   })
