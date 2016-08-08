@@ -102,7 +102,7 @@ const rideBias = 3;
 $(document).ready(function(){
   const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
-
+  alert("init");
   context = new AudioContext();
   context.suspend();
   initCanvas();
