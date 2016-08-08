@@ -228,15 +228,18 @@ li.hidden-xs.startDiv{
     padding:20px;
 }
 
-#loop,#pauseDiv{
+#loop{
     display:inline-block;
     height:40px;
-    margin-right:20px;
+    margin-right:10px;
     margin-top:10px;
     text-align: center;
+    width:210px;
 }
-#loop{
-    width:220px;
+#pauseDiv{
+    display:inline-block;
+    text-align: center;
+    margin:auto;
 }
 
 #tempoDiv{
